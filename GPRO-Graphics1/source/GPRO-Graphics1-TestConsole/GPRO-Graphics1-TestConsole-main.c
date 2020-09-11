@@ -22,6 +22,7 @@
 	Modified because: Get main to render a circle in an enviroment
 
 	Sources Used: https://raytracing.github.io/books/RayTracingInOneWeekend.html
+	How it was Used: Read his rendering pipeline and built it based on principles learned from him
 */
 
 #include <stdio.h>

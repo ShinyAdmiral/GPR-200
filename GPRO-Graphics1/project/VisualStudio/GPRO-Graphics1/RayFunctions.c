@@ -6,6 +6,7 @@ Due Date : 9/11/2020
 Description : Functions definitions of ray manipulations, coloring, and pixel rendering
 
 Sources Used: https://raytracing.github.io/books/RayTracingInOneWeekend.html
+How it was Used: Read his rendering pipeline and built it based on principles learned from him
  */
 
 #include "gpro/test/RayFunctions.h"

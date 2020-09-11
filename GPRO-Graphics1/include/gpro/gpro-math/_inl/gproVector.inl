@@ -22,6 +22,7 @@
 	Modified because: Needed to add functions for calculating and doing math with vec3s 
 
 	Sources Used: https://raytracing.github.io/books/RayTracingInOneWeekend.html
+	How it was Used: Read his rendering pipeline and built it based on principles learned from him
 */
 
 #ifdef _GPRO_VECTOR_H_

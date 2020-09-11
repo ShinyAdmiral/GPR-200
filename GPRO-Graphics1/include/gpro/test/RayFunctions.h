@@ -6,6 +6,7 @@ Due Date : 9/11/2020
 Description : Functions declarations for ray functions.
 
 Sources Used: https://raytracing.github.io/books/RayTracingInOneWeekend.html
+How it was Used: Read his rendering pipeline and built it based on principles learned from him
  */
 
 #pragma once
