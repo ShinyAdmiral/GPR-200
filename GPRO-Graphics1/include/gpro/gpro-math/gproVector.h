@@ -18,8 +18,10 @@
 	gproVector.h
 	Interface for vectors. Sets an example for C and C++ compatible headers.
 
-	Modified by: ____________
-	Modified because: ____________
+	Modified by: Andrew Hunt
+	Modified because: I needed to add functions in order to do math with the vec3 variables
+
+	Sources Used: https://raytracing.github.io/books/RayTracingInOneWeekend.html
 */
 
 #ifndef _GPRO_VECTOR_H_
@@ -36,7 +38,7 @@ extern "C" {
 //	-> in C you do it like this: 
 //		union vec3 someVector;
 //	-> this forward declaration makes the first way possible in both languages!
-typedef union vec3 vec3;
+//typedef union vec3 vec3;
 #endif	// __cplusplus
 
 
@@ -55,69 +57,45 @@ typedef float const* floatkv;	// generic constant float vector (pointer)
 //	A 3D vector data structure.
 //		member v: array (pointer) version of data
 //		members x, y, z: named components of vector
-union vec3C
-{
-	vec3 v;
-	struct { float x, y, z; };
-
-#ifdef __cplusplus
-	// DB: in C++ we can have convenient member functions
-	//	-> e.g. constructors, operators
-
-	explicit vec3C();	// default ctor
-	explicit vec3C(float const xc, float const yc = 0.0f, float const zc = 0.0f);	// init ctor w one or more floats
-	explicit vec3C(vec3 const vc);	// copy ctor w generic array of floats
-	vec3C(vec3C const& rh);	// copy ctor
-
-	vec3C& operator =(vec3C const& rh);	// assignment operator (copy other to this)
-
-	vec3C& operator +=(vec3C const& rh);	// addition assignment operator (add other to this)
-
-	vec3C const operator +(vec3C const& rh) const;	// addition operator (get sum of this and another)
-
-#endif	// __cplusplus
-};
-
 // DB: declare C functions (all equivalents of above C++ functions are here)
 //	-> return pointers so you can chain operations (they just take pointers)
 
 floatv vec3default(vec3 v_out);	// default init
-floatv vec3init(vec3 v_out, float const xc, float const yc, float const zc);	// init w floats
-floatv vec3copy(vec3 v_out, vec3 const v_rh);	// init w array of floats (same as assign and both copy ctors)
 
-floatv vec3add(vec3 v_lh_sum, vec3 const v_rh);	// add other to lh vector
+floatv vec3init(vec3 v_out, float const xc, float const yc, float const zc);// init w floats
 
-floatv vec3sum(vec3 v_sum, vec3 const v_lh, vec3 const v_rh);	// get sum of lh and rh vector
+floatv vec3copy(vec3 v_out, vec3 const v_rh);	                            // init w array of floats (same as assign and both copy ctors)
 
-floatv vec3sub(vec3 v_lh, vec3 const v_rh);
+floatv vec3add(vec3 v_lh_sum, vec3 const v_rh);	                            // add other to lh vector
 
-floatv vec3mul(vec3 v_lh, vec3 const v_rh);
+floatv vec3sum(vec3 v_sum, vec3 const v_lh, vec3 const v_rh);				// get sum of lh and rh vector
 
-floatv vec3multiD(float t, vec3 const v_rh);
+floatv vec3sub(vec3 v_lh, vec3 const v_rh);									// sub v_lh from v_rh
 
-floatv vec3div(vec3 const v_rh, float t);
+floatv vec3mul(vec3 v_lh, vec3 const v_rh);									// add other to lh vector
 
-floatv unit_vector(vec3 v);
+floatv vec3multiD(float t, vec3 v_rh);										// Multiply the float with each float within the vec3
 
-float length(vec3 const temp);
+floatv vec3div(vec3 v_rh, float t);											// divide each float within v_rh by the t
 
-float length_squared(vec3 const temp);
+floatv unit_vector(vec3 v);													// divide the vector by the length of the actual vector
 
-float dot(vec3 const u, vec3 const v);
+float length(vec3 const temp);												// get the sqaureroot of length_squared()
 
-floatv cross(vec3 temp, vec3 const u, vec3 const v);
+float length_squared(vec3 const temp);										// Square each float in the vec3 and add it together
+
+float dot(vec3 const u, vec3 const v);										// Multiply two vectors together. Add up each float product together
+
+floatv cross(vec3 temp, vec3 const u, vec3 const v);						// Calulate the cross vector of 2 different vectors
 
 //leaving out dot, cross, and the last * operator functions
-
 
 #ifdef __cplusplus
 // DB: end C linkage for C++ symbols
 }
 #endif	// __cplusplus
 
-
 // DB: include inline definitions for this interface
 #include "_inl/gproVector.inl"
-
 
 #endif	// !_GPRO_VECTOR_H_

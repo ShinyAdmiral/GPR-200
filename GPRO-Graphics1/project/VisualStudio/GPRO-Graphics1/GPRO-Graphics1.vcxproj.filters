@@ -24,15 +24,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GPRO-Graphics1.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="RayFunctions.c">
+      <Filter>Header Files\gpro\gpro-math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro\gpro-math\gproVector.h">
       <Filter>Header Files\gpro\gpro-math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\gpro\test\Ray.h">
+    <ClInclude Include="..\..\..\include\gpro\test\RayFunctions.h">
       <Filter>Header Files\gpro</Filter>
     </ClInclude>
   </ItemGroup>

@@ -155,11 +155,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GPRO-Graphics1.cpp" />
+    <ClCompile Include="RayFunctions.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro\gpro-math\gproVector.h" />
-    <ClInclude Include="..\..\..\include\gpro\test\Ray.h" />
+    <ClInclude Include="..\..\..\include\gpro\test\RayFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\gpro\gpro-math\_inl\gproVector.inl" />
