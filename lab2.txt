@@ -1,3 +1,15 @@
+//	Lab 2 AHunt
+//	A demonstration of 4 different patterns and effects using glsl
+//
+//	Created by: Andrew Hunt
+//	Created because: to demonstrate different patterns and effects using glsl
+//
+//	Credit:
+//	jonobr1
+//	https://www.shadertoy.com/user/jonobr1
+//	
+//	Why Used: help with initial circle calculation
+
 #define pi 3.1415926535
 
 //effect 0
