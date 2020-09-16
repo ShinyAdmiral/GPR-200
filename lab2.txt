@@ -33,11 +33,46 @@ vec4 checkeroard (in vec2 coords, in vec2 res){
     return checkerColor;
 }
 
+// effect 2
+//reference: jonobr1 https://www.shadertoy.com/user/jonobr1
+vec4 growCircle(in vec2 coord, in vec2 res, float theTime){
+    //normalize coords and get center of screen
+    vec2 uv = coord/res.xy;
+	vec2 center = res.xy * 0.5f;
+    
+    //set some variables to change the circle
+    float time = 1.5f;
+    float growth = 3.0f;
+    float minRadius = 0.5f;
+    
+    //calculate radius growth
+    float radius = (res.y * 0.25f);
+    float radExt = abs(mod(theTime * time, growth) - mod(theTime * time * 0.5f,growth)) + minRadius;
+    radius *= radExt;
+    
+    //Background layer
+    vec3 backCol = 0.5f + 0.5f*cos(theTime+uv.xyx+vec3(4.0f,2.0f,6.0f));
+    vec4 layer1 = vec4(backCol, 1.0f); 
+    
+    //draw the circle on layer 2   
+    vec3 color = vec3(abs(backCol.x - 1.0f), abs(backCol.y - 1.0f), abs(backCol.z - 1.0f));
+	float d = length(center - coord) - radius;	//credit jonobr1
+    float t = clamp(d, 0.0f, 1.0f);				//credit jonobr1
+    vec4 layer2 = vec4(color, 1.0f - t);		//credit jonobr1
+    
+    // Output to screen (interpolate between both layers)
+    return mix(layer1, layer2, layer2.a);
+
+}
+
+
 void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     //effect 0 (Static Color RG)
     //fragColor = colorGrad(fragCoord, iResolution.xy);
     
     //effect 1 (Checkeroard)
     fragColor = checkeroard(fragCoord, iResolution.xy);
-}
 
+    //effect 2 (Growing Circle)
+    //fragColor = growCircle(fragCoord, iResolution.xy, iTime);
+}
