@@ -1,0 +1,43 @@
+//effect 0
+vec4 colorGrad(in vec2 coords, in  vec2 res){
+    //make pixels a certain color depending on thier screen location
+    vec2 uv = coords / res.xy;
+    return vec4(uv, 0.0f, 1.0);
+}
+
+//effect 1
+vec4 checkeroard (in vec2 coords, in vec2 res){
+    //tile the screen based on aspect ratio (normalizes tiles)
+	vec2 tileSize;
+    tileSize.x = res.x/32.0f;
+    tileSize.y = res.y/18.0f;
+    
+    //These variables are getting the cordinates of each tile 
+    int coordCheckX = int(floor(coords.x / tileSize.x)) + 1;
+    int coordCheckY = int(floor(coords.y / tileSize.y)) + 1;
+    
+    //for every odd row, white is on the odd colums and black is on the even
+    vec4 checkerColor;
+    if (coordCheckY % 2 > 0){
+        if (coordCheckX % 2 > 0) checkerColor = vec4(0,0,0,1);
+        else 					 checkerColor = vec4(1);
+    }
+    
+    //for every even row, white is on the even colums and black is on the odd
+    else{
+    	if (coordCheckX % 2 > 0) checkerColor = vec4(1);
+        else 					 checkerColor = vec4(0,0,0,1);
+    }
+	
+    //return fragment color
+    return checkerColor;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+    //effect 0 (Static Color RG)
+    //fragColor = colorGrad(fragCoord, iResolution.xy);
+    
+    //effect 1 (Checkeroard)
+    fragColor = checkeroard(fragCoord, iResolution.xy);
+}
+
