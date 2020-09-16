@@ -1,3 +1,5 @@
+#define pi 3.1415926535
+
 //effect 0
 vec4 colorGrad(in vec2 coords, in  vec2 res){
     //make pixels a certain color depending on thier screen location
@@ -65,14 +67,158 @@ vec4 growCircle(in vec2 coord, in vec2 res, float theTime){
 
 }
 
+//effect 3
+float Circle (vec2 uv, vec2 pos, float radius, float blur){
+    //calculate circle and smooth it out 
+    float d = length(uv-pos);
+    float color = smoothstep(radius, radius - blur, d);
+    return color;
+}
+
+float rad(float degree){
+    //convert degrees to radians
+	return (pi * degree)/180.0f;
+}
+
+vec4 psychedelic(vec2 coord, float currentTime, vec2 res){
+    //normalize pixels, center it, then prevent stretch
+    vec2 uv = coord/res.xy;
+    uv -= 0.5;
+    uv.x *= res.x/res.y;
+    
+    float time = currentTime * 0.75f; 
+    
+    float color;	// sigular channel for a color
+    float dist;		// distance from center
+    float radius;	// radius of the circle
+    float distX;	// x position of circles
+    float distY;	// y position of circles
+    float angleSize;// how far spread apart the circles are
+    float speed;	// speed  of the 
+    
+    //layer 1
+    dist = mod(time, 2.0f);
+    radius = mod(time * 0.1f, 0.2f);
+    angleSize = 15.0f;
+    speed = 0.5f;
+    distX = sin(rad(time)) * dist;
+    distY = cos(rad(time)) * dist;
+    color = Circle(uv, vec2(distX, distY), radius, 0.01f);
+    
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i;
+        
+        distX = sin(rad(angle) + time * speed) * dist;
+        distY = cos(rad(angle) + time * speed) * dist;
+        color += Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+    
+    //layer 2
+    dist = mod(time * 0.5, 2.0f);
+    radius = mod(time * 0.1f, 0.2f);
+    speed = 1.5f;
+    angleSize = 15.0f;
+    
+    distX = sin(rad(0.0f)) * dist;
+    distY = cos(rad(0.0f)) * dist;
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i;
+        
+        distX = sin(rad(angle)+ (time * speed)) * dist;
+        distY = cos(rad(angle)+ (time * speed)) * dist;
+        color += Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+    
+    //layer 3
+    dist = mod(time * 0.25, 2.0f);
+    radius = mod(time * 0.1f, 0.2f);
+    speed = 1.5f;
+    angleSize = 15.0f;
+    
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i+ mod(time * 2.0f, angleSize);
+        
+        distX = sin(rad(angle)+ (time * speed)) * dist;
+        distY = cos(rad(angle)+ (time * speed)) * dist;
+        color += Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+    
+    //layer 4
+    dist = mod(time, 1.0f) + 0.2;
+    radius = mod(time * 0.1f, 0.2f);
+    speed = 2.5f;
+    angleSize = 15.0f;
+    
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i;
+        
+        distX = sin(rad(angle)+ (time * speed)) * dist;
+        distY = cos(rad(angle)+ (time * speed)) * dist;
+        color += Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+    
+    //layer 5
+    dist = mod(time, 1.0f);
+    radius = mod(time * 0.03f, 0.06f);
+    speed = 1.0f;
+    angleSize = 7.5f;
+    
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i;
+        
+        distX = sin(rad(angle)+ (time * speed)) * dist;
+        distY = cos(rad(angle)+ (time * speed)) * dist;
+        color -= Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+    
+    //layer 6
+    dist = mod(time * 0.9f, 2.0f);
+    radius = mod(time * 0.1f, 0.2f);
+    speed = 0.5f;
+    angleSize = 15.0f;
+    
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i;
+        
+        distX = sin(rad(angle)+ (time * speed)) * dist;
+        distY = cos(rad(angle)+ (time * speed)) * dist;
+        color -= Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+    
+    //layer 7
+    dist = mod(time * 0.25, 2.0f);
+    radius = mod(time * 0.1f, 0.2f);
+    speed = 1.0f;
+    angleSize = 15.0f;
+    
+    for (float i = 0.0f; i < 360.0f/angleSize; i++){
+        float angle = angleSize * i;
+        
+        distX = sin(rad(angle)+ (time * speed)) * dist;
+        distY = cos(rad(angle)+ (time * speed)) * dist;
+        color -= Circle(uv, vec2(distX, distY), radius, 0.01f);
+    }
+  
+    // Output to screen
+    if (color == 0.0f){
+        vec3 v = 0.3f + 0.2f*cos(currentTime+uv.xyx+vec3(1.0,4.0f,2.0));
+    	return vec4(v,1.0f);
+    }
+    else{
+    	return vec4(vec3(color, abs(mod(currentTime * 0.25, 1.0) - 1.0), 0.5f),1.0f);
+    }
+}
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     //effect 0 (Static Color RG)
     //fragColor = colorGrad(fragCoord, iResolution.xy);
     
     //effect 1 (Checkeroard)
-    fragColor = checkeroard(fragCoord, iResolution.xy);
-
+    //fragColor = checkeroard(fragCoord, iResolution.xy);
+    
     //effect 2 (Growing Circle)
     //fragColor = growCircle(fragCoord, iResolution.xy, iTime);
+    
+    //effect 3 (Psychedelic Effect)
+    fragColor = psychedelic(fragCoord, iTime, iResolution.xy);
 }
