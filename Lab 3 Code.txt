@@ -2,7 +2,7 @@
 #define ray vec3[2]
 #define tMax 1.0f
 #define tMin -1.0f
-#define objNum 2;
+const int OBJNUM = 2;
 
 struct circle {
 	vec3 p;
@@ -69,12 +69,13 @@ bool hitSphere(in vec3 centerPoint, in float radius, in ray r, out hitRecord rec
     return false;
 }
 
-vec3 rayColor(in ray rayIn, in float radius, in vec3 point){
-    hitRecord rec;
-    
-    if (hitSphere(point, radius, rayIn, rec)){
-        //calculate normal
-    	return 0.5f * (rec.n + vec3(1.0f));
+vec3 rayColor(in ray rayIn, circle cir[OBJNUM]){
+    for (int i = 0; i < OBJNUM; i++){
+    	hitRecord rec;
+        if (hitSphere(cir[i].p, cir[0].r, rayIn, rec)){
+            //calculate normal
+            return 0.5f * (rec.n + vec3(1.0f));
+        }
     }
     
     //calc default background by blending white and blue
@@ -87,7 +88,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     // -------------------------------------------------------------------
     // **Circle Declarations**
     // -------------------------------------------------------------------
-    circle obj[2];
+    circle obj[OBJNUM];
     
     obj[0].p = vec3(-1.0f, 0.0f, -1.0f);
     obj[0].r = 0.5f;
@@ -129,10 +130,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     vec3 pixelcColor = vec3(0.0f);
 	
     //take multiple samples and average them together
-    for (int i = 0; i < objNum; ++i) {
-        
-        pixelcColor += rayColor(pixleRay, obj[i].r, obj[i].p);
-    }
+    //for (int i = 0; i < objNum; ++i) {
+        pixelcColor = rayColor(pixleRay, obj);
+    	//pixelcColor += rayColor(pixleRay, obj[1].r, obj[1].p);
+    //}
     
     fragColor = vec4(pixelcColor, 1.0f);
 }
