@@ -51,7 +51,18 @@ floatv ray_color(vec3 temp, ray r) {
 	//change color to green if hit
 	if (t > 0.0f) {
 		//create ground color
-		vec3 color = { 36.0f / 255.0f, 169.0f / 255.0f, 57.0f / 255.0f };
+		//vec3 color = { 36.0f / 255.0f, 169.0f / 255.0f, 57.0f / 255.0f };
+		//return vec3copy(temp, color);
+		//calculations for normal colors
+		vec3 subVec = { 0.0f, 0.0f, -1.0f };
+		vec3 N;
+		ray_len(N, t, r);
+		vec3sub(N, subVec);
+		unit_vector(N);
+
+		//create normal colors
+		vec3 color = { N[0] + 1.0f, N[1] + 1.0f, N[2] + 1.0f };
+		vec3multiD(0.5f, color);
 		return vec3copy(temp, color);
 	}
 
