@@ -1,1 +1,97 @@
-Write code here
+#define pi 3.1415926535
+#define ray vec3[2]
+
+float hitSphere(in vec3 centerPoint, in float radius, in ray r){
+    //used in calculations
+    vec3 oc = r[0] - centerPoint;
+    
+    //calculate the normalized color float value from radius
+    float a 			= dot(r[1], r[1]);
+    float halfB 		= dot(oc, r[1]);
+    float c 			= dot(oc, oc) - radius * radius;
+    float discriminant 	= halfB * halfB - a * c;
+    
+    //return a negative value if not hit
+	if (discriminant < 0.0f) {
+		return -1.0f;
+	}
+    
+    //return the ray length if hit
+	else {
+		return (-halfB - sqrt(discriminant))/a;
+	}
+}
+
+vec3 rayLen(in float t, ray r){
+	//return the length of the ray
+    return r[0] + (t * r[1]);
+}
+
+vec3 rayColor(in ray rayIn, in float radius, in vec3 point){
+    float t = hitSphere(point, radius, rayIn);
+    
+    if (t > 0.0f){
+        //calculate normal
+    	vec3 normal = rayLen(t, rayIn) - vec3(0.0f, 0.0f, -1.0f);
+        normal = normal/(sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z));
+        
+        vec3 color = 0.5f * (normal + 1.0f);
+        return color;
+    }
+    
+    //calc default background by blending white and blue
+    t = 0.5f * (rayIn[1].y + 1.0f);
+    vec3 color1 = vec3(1.0f);
+    vec3 color2 = vec3(0.5f, 0.7f, 1.0f);
+    
+    return (1.0f - t) * color1 + (t * color2);
+}
+
+//float randomNumber(in float _max, in float _min){
+//	
+//}
+
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+    // -------------------------------------------------------------------
+    // **Camera Setup**
+    // -------------------------------------------------------------------
+    
+    const float aspectRatio = 16.0f / 9.0f;					//aspect ratio of the project
+    
+    float viewportHeight	= 2.0f;							//height of camera
+	float viewportWidth	= aspectRatio * viewportHeight;		//width of camera
+    float focalLength		= 1.0f;							//center point of camera
+
+	//calculate vec3 of cameras
+	vec3 origin		= vec3( 0.0f, 0.0f, 0.0f );				//origin point of camera
+	vec3 horizontal = vec3( viewportWidth, 0.0f, 0.0f );	//furthest right point of camera
+	vec3 vertical	= vec3( 0.0f, viewportHeight, 0.0f );	//furthest top point of camera
+
+	//calculate lower left corner
+	vec3 lowerLeftCorner = origin - (horizontal/2.0f) - (vertical/2.0f) - vec3(0.0f, 0.0f, focalLength);
+	
+    // -------------------------------------------------------------------
+    // **Rendering Per Pixel**
+    // -------------------------------------------------------------------
+    
+    //calculate verticle and horizontal position of a targetted pixel
+    vec2 uv = fragCoord / iResolution.xy;
+    
+    //declare and assign ray per pixel
+    ray pixleRay;
+    pixleRay[0] = origin;
+    pixleRay[1] = lowerLeftCorner + horizontal * uv.x + uv.y * vertical - origin;
+    
+    //get color of the pixel by calculation of cricle
+    //vec4 color1 = rayColor(pixleRay, 0.5f, vec3 (0.0f, -100.0f, -1.f));
+    vec3 pixelcColor = vec3(0.0f);
+	
+    //take multiple samples and average them together
+    //for (int i = 0; i < 100; ++i) {
+        
+        pixelcColor += rayColor(pixleRay, 0.5f, vec3 (0.0f, 0.0f, -1.f));
+    //}
+    
+    fragColor = vec4(pixelcColor, 1.0f);
+}
