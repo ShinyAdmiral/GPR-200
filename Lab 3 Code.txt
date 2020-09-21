@@ -2,7 +2,9 @@
 #define ray vec3[2]
 #define tMax 1.0f
 #define tMin -1.0f
-const int OBJNUM = 2;
+
+const int OBJNUM 		= 2;
+const float SAMPCOUT 	= 100.0f;
 
 struct circle {
 	vec3 p;
@@ -96,12 +98,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     // -------------------------------------------------------------------
     circle obj[OBJNUM];
     
-    obj[0].p = vec3(0.0f, 0.0f, -1.0f);
-    obj[0].r = 0.5f;
+    float rate = 2.0f;
+    
+    obj[0].p = vec3(0.0f, ((pow(sin(iTime * rate), 2.0) + 1.2f)/-1.0f + 1.0f) * ((cos(iTime * rate)>0.0f) ? -1.0f : 1.0f) , -1.0f);
+    obj[0].r = (sin(iTime * rate) * 0.3f + 0.7f)/2.0f;
     obj[0].c = vec3(-1.0f);
     
-    obj[1].p = vec3(0.0f, -1.0f, -1.4f);
-    obj[1].r = 1.4f;
+    obj[1].p = vec3(0.0f, -5.1f, -2.0f);
+    obj[1].r = 4.9f;
     obj[1].c = vec3(0.0f, 1.0f, 0.1f);
     
     // -------------------------------------------------------------------
@@ -112,7 +116,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     
     float viewportHeight	= 2.0f;							//height of camera
 	float viewportWidth	= aspectRatio * viewportHeight;		//width of camera
-    float focalLength		= 1.0f;							//center point of camera
+    float focalLength		= 2.0f;							//center point of camera
 
 	//calculate vec3 of cameras
 	vec3 origin		= vec3( 0.0f, 0.0f, 0.0f );				//origin point of camera
@@ -129,20 +133,31 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     //calculate verticle and horizontal position of a targetted pixel
     vec2 uv = fragCoord / iResolution.xy;
     
-    //declare and assign ray per pixel
-    ray pixleRay;
-    pixleRay[0] = origin;
-    pixleRay[1] = lowerLeftCorner + horizontal * uv.x + uv.y * vertical - origin;
-    
     //get color of the pixel by calculation of cricle
-    //vec4 color1 = rayColor(pixleRay, 0.5f, vec3 (0.0f, -100.0f, -1.f));
     vec3 pixelcColor = vec3(0.0f);
 	
+    //smaple calcs
+    vec2 invRes = 1.0/iResolution.xy;
+    
     //take multiple samples and average them together
-    //for (int i = 0; i < objNum; ++i) {
-        pixelcColor = rayColor(pixleRay, obj);
-    	//pixelcColor += rayColor(pixleRay, obj[1].r, obj[1].p);
-    //}
+    for (float i = 0.0f; i < SAMPCOUT; i++){
+        vec2 samplePoint = uv;
+        
+        float sampHalf = (SAMPCOUT/2.0f);
+        
+        samplePoint.x += invRes.x * i / SAMPCOUT;
+        samplePoint.y += invRes.y * i / SAMPCOUT;
+        
+        //declare and assign ray per pixel
+    	ray pixleRay;
+    	pixleRay[0] = origin;
+    	pixleRay[1] = lowerLeftCorner + horizontal * samplePoint.x + samplePoint.y * vertical - origin;
+        
+    	pixelcColor += rayColor(pixleRay, obj);
+    }
+	
+    float scale = 1.0f / SAMPCOUT;
+   	pixelcColor *= scale;
     
     fragColor = vec4(pixelcColor, 1.0f);
 }
