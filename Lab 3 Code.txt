@@ -6,7 +6,8 @@ const int OBJNUM = 2;
 
 struct circle {
 	vec3 p;
-    float r; 
+    float r;
+    vec3 c;
 };
 
 struct hitRecord{
@@ -72,9 +73,14 @@ bool hitSphere(in vec3 centerPoint, in float radius, in ray r, out hitRecord rec
 vec3 rayColor(in ray rayIn, circle cir[OBJNUM]){
     for (int i = 0; i < OBJNUM; i++){
     	hitRecord rec;
-        if (hitSphere(cir[i].p, cir[0].r, rayIn, rec)){
+        if (hitSphere(cir[i].p, cir[i].r, rayIn, rec)){
             //calculate normal
-            return 0.5f * (rec.n + vec3(1.0f));
+            if (cir[i].c.x == -1.0f){
+            	return 0.5f * (rec.n + vec3(1.0f));
+            }
+            else{
+            	return cir[i].c;
+            }
         }
     }
     
@@ -90,10 +96,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     // -------------------------------------------------------------------
     circle obj[OBJNUM];
     
-    obj[0].p = vec3(-1.0f, 0.0f, -1.0f);
+    obj[0].p = vec3(0.0f, 0.0f, -1.0f);
     obj[0].r = 0.5f;
-    obj[1].p = vec3(1.0f, 0.0f, -1.0f);
-    obj[1].r = 0.5f;
+    obj[0].c = vec3(-1.0f);
+    
+    obj[1].p = vec3(0.0f, -1.0f, -1.4f);
+    obj[1].r = 1.4f;
+    obj[1].c = vec3(0.0f, 1.0f, 0.1f);
     
     // -------------------------------------------------------------------
     // **Camera Setup**
