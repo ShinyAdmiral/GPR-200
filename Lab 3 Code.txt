@@ -1,7 +1,36 @@
 #define pi 3.1415926535
 #define ray vec3[2]
+#define tMax 1.0f
+#define tMin -1.0f
+#define objNum 2;
 
-float hitSphere(in vec3 centerPoint, in float radius, in ray r){
+struct circle {
+	vec3 p;
+    float r; 
+};
+
+struct hitRecord{
+	vec3 p;
+    vec3 n;
+    float t;
+    bool frontFace;
+};
+
+vec3 rayLen(in float t, ray r){
+	//return the length of the ray
+    return r[0] + (t * r[1]);
+}
+
+vec3 atRay(in ray r, float t){
+	return r[0] + t * r[1];
+}
+
+void setFaceNormal(out hitRecord rec, in ray r, in vec3 outward){
+	rec.frontFace = dot(r[1], outward) < 0.0f;
+    rec.n = rec.frontFace ? outward : (outward * -1.0f);
+}
+
+bool hitSphere(in vec3 centerPoint, in float radius, in ray r, out hitRecord rec){
     //used in calculations
     vec3 oc = r[0] - centerPoint;
     
@@ -11,48 +40,60 @@ float hitSphere(in vec3 centerPoint, in float radius, in ray r){
     float c 			= dot(oc, oc) - radius * radius;
     float discriminant 	= halfB * halfB - a * c;
     
-    //return a negative value if not hit
-	if (discriminant < 0.0f) {
-		return -1.0f;
-	}
-    
     //return the ray length if hit
-	else {
-		return (-halfB - sqrt(discriminant))/a;
-	}
-}
+	if (discriminant > 0.0f) {
+		float root = sqrt(discriminant);
+        float temp = (-halfB - root)/a;
+        
+        if(temp < tMax && temp > tMin){
+        	rec.t = temp;
+            rec.p = atRay(r, rec.t);
+            
+            vec3 outwardNormal = (rec.p - centerPoint) / radius;
+            setFaceNormal(rec , r, outwardNormal);
+            return true;
+        }
+        
+        temp = (-halfB + root)/a;
+        if(temp < tMax && temp > tMin){
+        	rec.t = temp;
+            rec.p = atRay(r, rec.t);
+            
+            vec3 outwardNormal = (rec.p - centerPoint) / radius;
+            setFaceNormal(rec , r, outwardNormal);
+            return true;
+        }
+    }
+    
 
-vec3 rayLen(in float t, ray r){
-	//return the length of the ray
-    return r[0] + (t * r[1]);
+    return false;
 }
 
 vec3 rayColor(in ray rayIn, in float radius, in vec3 point){
-    float t = hitSphere(point, radius, rayIn);
+    hitRecord rec;
     
-    if (t > 0.0f){
+    if (hitSphere(point, radius, rayIn, rec)){
         //calculate normal
-    	vec3 normal = rayLen(t, rayIn) - vec3(0.0f, 0.0f, -1.0f);
-        normal = normal/(sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z));
-        
-        vec3 color = 0.5f * (normal + 1.0f);
-        return color;
+    	return 0.5f * (rec.n + vec3(1.0f));
     }
     
     //calc default background by blending white and blue
-    t = 0.5f * (rayIn[1].y + 1.0f);
-    vec3 color1 = vec3(1.0f);
-    vec3 color2 = vec3(0.5f, 0.7f, 1.0f);
-    
-    return (1.0f - t) * color1 + (t * color2);
+    vec3 unitDir = rayIn[1] / sqrt(dot(rayIn[1], rayIn[1]));
+    float t = 0.5f * (unitDir.y + 1.0f);
+    return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
 }
 
-//float randomNumber(in float _max, in float _min){
-//	
-//}
-
-
 void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+    // -------------------------------------------------------------------
+    // **Circle Declarations**
+    // -------------------------------------------------------------------
+    circle obj[2];
+    
+    obj[0].p = vec3(-1.0f, 0.0f, -1.0f);
+    obj[0].r = 0.5f;
+    obj[1].p = vec3(1.0f, 0.0f, -1.0f);
+    obj[1].r = 0.5f;
+    
     // -------------------------------------------------------------------
     // **Camera Setup**
     // -------------------------------------------------------------------
@@ -88,10 +129,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     vec3 pixelcColor = vec3(0.0f);
 	
     //take multiple samples and average them together
-    //for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < objNum; ++i) {
         
-        pixelcColor += rayColor(pixleRay, 0.5f, vec3 (0.0f, 0.0f, -1.f));
-    //}
+        pixelcColor += rayColor(pixleRay, obj[i].r, obj[i].p);
+    }
     
     fragColor = vec4(pixelcColor, 1.0f);
 }
