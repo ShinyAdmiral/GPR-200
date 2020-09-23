@@ -1,0 +1,186 @@
+#define pi 3.1415926535
+#define ray vec3[2]
+#define tMax 9999999.9999999f
+#define tMin 0.0f
+
+const int OBJNUM 		= 5;
+const float SAMPCOUT 	= 1000.0f;
+
+struct circle {
+	vec3 p;
+    float r;
+    vec3 c;
+};
+
+struct hitRecord{
+	vec3 p;
+    vec3 n;
+    vec3 c;
+    float t;
+    bool frontFace;
+};
+
+vec3 rayLen(in float t, ray r){
+	//return the length of the ray
+    return r[0] + (t * r[1]);
+}
+
+vec3 atRay(in ray r, float t){
+	return r[0] + t * r[1];
+}
+
+void setFaceNormal(out hitRecord rec, in ray r, in vec3 outward){
+	rec.frontFace = dot(r[1], outward) < 0.0f;
+    rec.n = rec.frontFace ? outward : (outward * -1.0f);
+}
+
+//if(hitSphere(cir[i].p, cir[i].r, r, closest, rec)){
+bool hitSphere(in vec3 centerPoint, in float radius, in ray r, in float cMax, in float cMin, out hitRecord rec){
+    //used in calculations
+    vec3 oc = r[0] - centerPoint;
+    
+    //calculate the normalized color float value from radius
+    float a 			= dot(r[1], r[1]);
+    float halfB 		= dot(oc, r[1]);
+    float c 			= dot(oc, oc) - radius * radius;
+    float discriminant 	= halfB * halfB - a * c;
+    
+    //return the ray length if hit
+	if (discriminant > 0.0f) {
+		float root = sqrt(discriminant);
+        float temp = (-halfB - root)/a;
+        
+        if(temp < cMax && temp > cMin){
+        	rec.t = temp;
+            rec.p = atRay(r, rec.t);
+            
+            vec3 outwardNormal = (rec.p - centerPoint) / radius;
+            setFaceNormal(rec , r, outwardNormal);
+            return true;
+        }
+        
+        temp = (-halfB + root)/a;
+        if(temp < cMax && temp > cMin){
+        	rec.t = temp;
+            rec.p = atRay(r, rec.t);
+            
+            vec3 outwardNormal = (rec.p - centerPoint) / radius;
+            setFaceNormal(rec , r, outwardNormal);
+            return true;
+        }
+    }
+    
+
+    return false;
+}
+
+bool hit(in ray r, in circle[OBJNUM] cir, out hitRecord rec){
+	hitRecord tempRec;
+    bool hitAnything = false;
+    float closest = 9999999.9999999f;
+    
+    for (int i = 0; i < OBJNUM; i++) {
+        if(hitSphere(cir[i].p, cir[i].r, r, closest, 0.0f, tempRec)){
+        	hitAnything = true;
+            closest = tempRec.t;
+            rec = tempRec;
+        }
+    }
+    
+    return hitAnything;
+}
+
+
+vec3 rayColor(in ray rayIn, circle cir[OBJNUM]){
+    
+    hitRecord rec;
+    if (hit(rayIn, cir, rec)){
+        //calculate normal
+       	return 0.5f * (rec.n + vec3(1.0f));
+    }
+    
+    //calc default background by blending white and blue
+    vec3 unitDir = rayIn[1] / sqrt(dot(rayIn[1], rayIn[1]));
+    float t = 0.5f * (unitDir.y + 1.0f);
+    return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+    // -------------------------------------------------------------------
+    // **Circle Declarations**
+    // -------------------------------------------------------------------
+    circle obj[OBJNUM];
+    
+    float rate = 3.0f;
+    
+    obj[0].p = vec3(sin(iTime * rate * 0.3333f), (pow(sin(iTime * rate), 2.0) + 1.2f) * -0.5f + 1.0f, -10.0f - (sin(iTime * rate) * 19.3f + 0.7f) * 0.5f);
+    obj[0].r = 0.5f;
+    obj[0].c = vec3(-1.0f);
+    
+    obj[1].p = vec3(sin(iTime * -rate * 0.3333f), (pow(cos(iTime * rate), 2.0) + 1.2f) * -0.5f + 1.0f, -10.0f - (cos(iTime * rate) * 19.3f + 0.7f) * 0.5f);
+    obj[1].r = 0.5f;
+    obj[1].c = vec3(-1.0f);
+    
+    obj[2].p = vec3(sin(iTime * rate * 0.3333f) * 2.0, (pow(sin(iTime * rate), 2.0) + 1.2f) * -0.5f + 1.0f, -10.0f - (sin(iTime * rate * 0.5 + pi * 0.5) * 19.3f + 0.7f) * 0.5);
+    obj[2].r = 0.5f;
+    obj[2].c = vec3(-1.0f);
+    
+    obj[3].p = vec3(sin(iTime * -rate * 0.3333f) * 2.0, (pow(cos(iTime * rate), 2.0) + 1.2f) * -0.5f + 1.0f, -10.0f - (cos(iTime * rate * 0.5 + pi * 0.5) * 19.3f + 0.7f) * 0.5);
+    obj[3].r = 0.5f;
+    obj[3].c = vec3(-1.0f);
+    
+    obj[4].p = vec3(0.0f, -100.1f, -2.0f);
+    obj[4].r = 97.0f;
+    obj[4].c = vec3(0.0f, 1.0f, 0.1f);
+    
+    // -------------------------------------------------------------------
+    // **Camera Setup**
+    // -------------------------------------------------------------------
+    
+    const float aspectRatio = 16.0f / 9.0f;					//aspect ratio of the project
+    
+    float viewportHeight	= 2.0f;							//height of camera
+	float viewportWidth	= aspectRatio * viewportHeight;		//width of camera
+    float focalLength		= 1.0f;							//center point of camera
+
+	//calculate vec3 of cameras
+	vec3 origin		= vec3( 0.0f, 0.0f, 0.0f );				//origin point of camera
+	vec3 horizontal = vec3( viewportWidth, 0.0f, 0.0f );	//furthest right point of camera
+	vec3 vertical	= vec3( 0.0f, viewportHeight, 0.0f );	//furthest top point of camera
+
+	//calculate lower left corner
+	vec3 lowerLeftCorner = origin - (horizontal/2.0f) - (vertical/2.0f) - vec3(0.0f, 0.0f, focalLength);
+	
+    // -------------------------------------------------------------------
+    // **Rendering Per Pixel**
+    // -------------------------------------------------------------------
+    
+    //calculate verticle and horizontal position of a targetted pixel
+    vec2 uv = fragCoord / iResolution.xy;
+    
+    //get color of the pixel by calculation of cricle
+    vec3 pixelcColor = vec3(0.0f);
+	
+    //smaple calcs
+    vec2 invRes = 1.0/iResolution.xy;
+    
+    //take multiple samples and average them together
+    for (float i = 0.0f; i < SAMPCOUT; i++){
+        vec2 samplePoint = uv;
+        
+        samplePoint.x += invRes.x * i / SAMPCOUT;
+        samplePoint.y += invRes.y * i / SAMPCOUT;
+        
+        //declare and assign ray per pixel
+    	ray pixleRay;
+    	pixleRay[0] = origin;
+    	pixleRay[1] = lowerLeftCorner + horizontal * samplePoint.x + samplePoint.y * vertical - origin;
+        
+    	pixelcColor += rayColor(pixleRay, obj);
+    }
+	
+    float scale = 1.0f / SAMPCOUT;
+   	pixelcColor *= scale;
+    
+    fragColor = vec4(pixelcColor, 1.0f);
+}
