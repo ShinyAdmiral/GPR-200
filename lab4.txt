@@ -102,6 +102,11 @@ float lightHit(in vec4 rayDirection, in vec4 rayOrigin, in sphere obj){
 //    rayDirection: input ray direction
 //    rayOrigin:    input ray origin
 vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport){
+    //Global Scene Values
+    float ambIn = 1.0;
+    vec3 ambCol = vec3(0.9, 0.05, 0.18);
+    
+    
     // SCENE ---------------------------------------------
     // SPHERES
     sphere obj;
@@ -149,11 +154,15 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport){
         specularIn = pow(specularCo, 64.0);
         
         //calc color
-        vec3 color = diffIn * vec3(1.0,0.0,0.0) * light.color.xyz;
+        //vec3 color = diffIn * vec3(1.0,0.0,0.0) * light.color.xyz;
+        vec3 color = ambIn * ambCol + 
+            		  (diffIn * (normal * 0.5 + 0.5) +
+                      specularIn * vec3(1.0)) *
+            		  light.color.xyz;
         
         //return color
         //return vec4 (color , 1.0);
-        return vec4 (vec3(specularIn) , 1.0);
+        return vec4 (vec3(color) , 1.0);
     }
     
 	// BACKGROUND
