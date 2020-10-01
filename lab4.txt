@@ -1,4 +1,10 @@
-// GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//Lighting Code by: Andrew Hunt and Aiden Wright
+//GPR-200-02
+//Assignment: Lab 3
+//Due Date: 31 October 2020
+
+//Sources Used: GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+//How it was Used: To get us started
 
 // asPoint: promote a 3D vector into a 4D vector representing a point (w=1)
 //    point: input 3D vector
@@ -211,8 +217,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport, in flo
 // mainImage: process the current pixel (exactly one call per pixel)
 //    fragColor: output final color for current pixel
 //    fragCoord: input location of current pixel in image (in pixels)
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
-{
+void mainImage(out vec4 fragColor, in vec2 fragCoord){
     // viewing plane (viewport) info
     vec3 viewport;
     vec2 ndc, uv, resolutionInv;
