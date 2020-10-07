@@ -235,7 +235,7 @@ color4 Lambertian (sCoord loc){
 
 
 // Source for math: https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
-vec3 rotateRay(sRay ray, float rad, int axis){
+vec3 rotateRay(sRay ray, float rad, const int axis){
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
     y = ray.direction.y;
@@ -266,55 +266,78 @@ vec3 rotateRay(sRay ray, float rad, int axis){
     return vec3(x_, y_, z_);
 }
 
-/*
-sampler2D getCubeFace(sRay dir)
-{
-	samplerCube GL_TEXTURE_CUBE_MAP = iChannel2;
+color4 blackhole(vec2 pos, sampler2D tex, sCoord loc, sCoord px, float time){
+    vec2 warp = pos * pow(distance(pos, px), -3.0) * 200.0;
+    warp = warp * -cos(time);
+    loc = loc + warp;
+   	
+    float light =  clamp(0.05 * distance(pos, px) - 2.0 + abs(cos(time)), 0.0, 1.0);
     
+    color4 color = texture(tex, loc + sin(time));
+    
+    return color * light;
 }
-*/
 
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
 color4 calcColor(in sViewport vp, in sRay ray)
 {
-    // test inputs
-    //return color4(ray.direction.xyz == vp.viewportPoint.xyz); // pass
-    //return color4(lengthSq(vp.viewportPoint.xy) >= 0.25); // pass
-    //return color4(vp.uv, 0.0, 0.0);
-    //return color4(vp.ndc, 0.0, 0.0);
-    // texture(full-screen)
-    
-    //sCoord px = vp.pixelCoord;
-    //sDCoord res = iChannelResolution[0].xy;
-    //sScalar ratio = res.y * vp.resolutionInv.y;
-    //sCoord loc = px / res;
-    //float time = iTime;
-    //loc = ratio * tan(loc) * tan(loc) + time * 0.5f;
-    //return texture(iChannel2, vec3(ray.direction.x, ray.direction.y, ray.direction.z) * vec3(loc, ray.direction.z));
-    
-    
     sCoord px = vp.pixelCoord;
     sDCoord res = iChannelResolution[0].xy;
     sScalar ratio = res.y * vp.resolutionInv.y;
     sCoord loc = px / res;
     loc *= ratio;
-    ray.direction.xyz = rotateRay(ray, mod(iTime, 2. * pi), 1);
-    //sRay dir = ray.direction.xyz + vec3(mod(iTime, 36.f), 0, 0);
-    //sampler2D face = getCubeFace(dir);
-    return texture(iChannel2, ray.direction.xyz);
     
-	//effect3
+    //effect 4
+    //ray.direction.xyz = rotateRay(ray, mod(iTime, 2. * pi), 1);
+    //return texture(iChannel2, ray.direction.xyz);
+    
+    //effect bonus 2
+    pointLight light;
+    initLight(light, vec3(1, 1, 1.75), vec3(1), 30000.0);   
+  
+    vec3 normal = normalize(vec3(loc.xy, 1.0));
+    
+    //calculate light
+    float diffCo, attenIn, d, diffIn;
+    
+    //calc Light diffuse and normalize it
+    vec3 l = light.center.xyz - vec3(loc, 1);
+    float lLen = length(l);
+    vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
+    
+    //calculate the light diffuse coefficient 
+    diffCo = max(0.0, dot(normal, L));
+    
+    //calc distance from light to surface
+    d = sqrt((loc.x - light.center.x) * (loc.x - light.center.x) + 
+             (loc.y - light.center.y) * (loc.y - light.center.y));
+    
+    //calc Attenuation
+    attenIn = 1.0/(1.0 + d / light.intensity + (d * d)/ (light.intensity * light.intensity));
+    
+    //calc diffuse intensity
+    diffIn = diffCo * attenIn;
+    
+    vec4 diffColo = texture(iChannel0, loc);
+    
+    vec3 color = diffIn * diffColo.xyz * light.color;
+    
+	//effect 3
     //return Lambertian(loc);
     
-    //effect2
+    //effect bonus 1
+    //return blackhole(vec2(400.0, 225.0), iChannel1, loc, px, iTime);
+    
+    //effect 2
     //float time = iTime;
     //loc = distortion(ratio, loc, time);
     //return texture(iChannel1, loc);
     
     //effect 1
     //return crossfade(iChannel0, iChannel1, loc, iTime);
+    
 }
 
 
