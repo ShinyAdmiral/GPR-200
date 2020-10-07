@@ -185,6 +185,20 @@ void initLight (out pointLight light, in vec3 center, in vec3 color, in float in
 }
 
 //------------------------------------------------------------
+// SPHERE INFO
+//data structure for spheres
+struct sphere{
+	vec4 center; //center point of sphere
+    float radius;//radius of sphere
+};
+
+void initSphere (out sphere obj, in vec3 center, in float radius){
+    // initialize sphere variables
+	obj.center = asPoint(center);
+    obj.radius = radius;
+}
+
+//------------------------------------------------------------
 // RENDERING FUNCTIONS
 
 color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
@@ -193,8 +207,7 @@ color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
                sin(time) * 0.5 + 0.5);
 }
 
-vec2 distortion(sScalar ratio, vec2 loc, float time)
-{
+vec2 distortion(sScalar ratio, vec2 loc, float time){
 	return ratio * tan(loc) * tan(loc) + time * 0.5f;
 }
 
@@ -231,8 +244,6 @@ color4 Lambertian (sCoord loc){
     
     return vec4(color, 1);
 }
-
-
 
 // Source for math: https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
 vec3 rotateRay(sRay ray, float rad, const int axis){
@@ -278,6 +289,61 @@ color4 blackhole(vec2 pos, sampler2D tex, sCoord loc, sCoord px, float time){
     return color * light;
 }
 
+color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
+	//declare sphere
+    sphere obj;
+    //initiallize sphere
+    initSphere(obj, vec3(0.0, 0.0, -4.0), 0.5);
+    
+    pointLight light;
+    initLight(light, vec3(5, 8, 10), vec3(1), 30000.0); 
+
+    vec3 dp;
+    dp.xy = ray.direction.xy - obj.center.xy;
+    
+    //check if hitting surface
+    float lSq = lengthSq(dp.xy),
+          rSq = obj.radius * obj.radius;
+    
+    if (lSq <= rSq){    
+		//calc sphere
+        dp.z = rSq - lSq;
+        
+        vec3 position = obj.center.xyz + vec3(dp.x, dp.y, sqrt(dp.z));
+        vec3 N = (position - obj.center.xyz) / obj.radius;
+
+        //calculate light
+        float diffCo, attenIn, d, diffIn;
+
+        //calc Light diffuse and normalize it
+        vec3 l = light.center.xyz - vec3(loc, 1);
+        float lLen = length(l);
+        vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
+
+        //calculate the light diffuse coefficient 
+        diffCo = max(0.0, dot(N, L));
+
+        //calc distance from light to surface
+        d = distance(dp, light.center);
+
+        //calc Attenuation
+        attenIn = 1.0/(1.0 + d / light.intensity + (d * d)/ (light.intensity * light.intensity));
+
+        //calc diffuse intensity
+        diffIn = diffCo * attenIn;
+		
+        float theta = atan(N.x/N.z + pi *2.);
+        
+        vec3 diffColo = texture(tex, loc * theta + sin(iTime)).rgb;
+
+        vec3 color = diffIn * diffColo * light.color;
+        
+        return vec4(color, 1);
+    }
+    
+    return vec4(0.5);
+}
+
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
@@ -294,35 +360,7 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //return texture(iChannel2, ray.direction.xyz);
     
     //effect bonus 2
-    pointLight light;
-    initLight(light, vec3(1, 1, 1.75), vec3(1), 30000.0);   
-  
-    vec3 normal = normalize(vec3(loc.xy, 1.0));
-    
-    //calculate light
-    float diffCo, attenIn, d, diffIn;
-    
-    //calc Light diffuse and normalize it
-    vec3 l = light.center.xyz - vec3(loc, 1);
-    float lLen = length(l);
-    vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
-    
-    //calculate the light diffuse coefficient 
-    diffCo = max(0.0, dot(normal, L));
-    
-    //calc distance from light to surface
-    d = sqrt((loc.x - light.center.x) * (loc.x - light.center.x) + 
-             (loc.y - light.center.y) * (loc.y - light.center.y));
-    
-    //calc Attenuation
-    attenIn = 1.0/(1.0 + d / light.intensity + (d * d)/ (light.intensity * light.intensity));
-    
-    //calc diffuse intensity
-    diffIn = diffCo * attenIn;
-    
-    vec4 diffColo = texture(iChannel0, loc);
-    
-    vec3 color = diffIn * diffColo.xyz * light.color;
+    //return ballLighting(loc, ray, iChannel3);
     
 	//effect 3
     //return Lambertian(loc);
