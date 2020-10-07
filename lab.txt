@@ -30,6 +30,9 @@
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
 
+//
+//
+#define pi 3.1415926535897932384626
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
@@ -229,6 +232,48 @@ color4 Lambertian (sCoord loc){
     return vec4(color, 1);
 }
 
+
+
+// Source for math: https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
+vec3 rotateRay(sRay ray, float rad, int axis){
+    float x, y, z, x_, y_, z_;
+    x = ray.direction.x;
+    y = ray.direction.y;
+    z = ray.direction.z;
+    
+    switch (axis){
+        //ROTATE AROUND THE Z AXIS
+    	case (0):
+        	x_ = x * cos(rad) - y * sin(rad);
+        	y_ = y * sin(rad) + y * cos(rad);
+        	z_ = z;
+        	break;
+        
+        //ROTATE AROUND THE Y AXIS
+        case (1):
+        	x_ = x * cos(rad) + z * sin(rad);
+			y_ = y;
+			z_ = -x * sin(rad) + z * cos(rad);
+        	break;
+        
+        //ROTATE AROUND THE X AXIS
+        case (2):
+        	x_ = x;
+			y_ = y * cos(rad) - z * sin(rad);
+			z_ = y * sin(rad) + z * cos(rad);
+        	break;
+    }
+    return vec3(x_, y_, z_);
+}
+
+/*
+sampler2D getCubeFace(sRay dir)
+{
+	samplerCube GL_TEXTURE_CUBE_MAP = iChannel2;
+    
+}
+*/
+
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
@@ -240,18 +285,35 @@ color4 calcColor(in sViewport vp, in sRay ray)
     //return color4(vp.uv, 0.0, 0.0);
     //return color4(vp.ndc, 0.0, 0.0);
     // texture(full-screen)
+    
+    //sCoord px = vp.pixelCoord;
+    //sDCoord res = iChannelResolution[0].xy;
+    //sScalar ratio = res.y * vp.resolutionInv.y;
+    //sCoord loc = px / res;
+    //float time = iTime;
+    //loc = ratio * tan(loc) * tan(loc) + time * 0.5f;
+    //return texture(iChannel2, vec3(ray.direction.x, ray.direction.y, ray.direction.z) * vec3(loc, ray.direction.z));
+    
+    
     sCoord px = vp.pixelCoord;
     sDCoord res = iChannelResolution[0].xy;
     sScalar ratio = res.y * vp.resolutionInv.y;
     sCoord loc = px / res;
     loc *= ratio;
+    ray.direction.xyz = rotateRay(ray, mod(iTime, 2. * pi), 1);
+    //sRay dir = ray.direction.xyz + vec3(mod(iTime, 36.f), 0, 0);
+    //sampler2D face = getCubeFace(dir);
+    return texture(iChannel2, ray.direction.xyz);
     
+	//effect3
     //return Lambertian(loc);
     
+    //effect2
     //float time = iTime;
     //loc = distortion(ratio, loc, time);
     //return texture(iChannel1, loc);
     
+    //effect 1
     //return crossfade(iChannel0, iChannel1, loc, iTime);
 }
 
