@@ -167,8 +167,19 @@ void initRayOrtho(out sRay ray,
 
 //------------------------------------------------------------
 // LIGHT INFO
+//data structure for light
+struct pointLight {
+	vec3 center; 	 // center point of light
+    vec3 color;		 // color of light
+    float intensity; // intensity of light
+};
 
-
+void initLight (out pointLight light, in vec3 center, in vec3 color, in float intensity){
+	//initialize light variables
+    light.center = center;
+    light.color = color;
+    light.intensity = intensity;
+}
 
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
@@ -182,6 +193,40 @@ color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
 vec2 distortion(sScalar ratio, vec2 loc, float time)
 {
 	return ratio * tan(loc) * tan(loc) + time * 0.5f;
+}
+
+color4 Lambertian (sCoord loc){
+	pointLight light;
+    initLight(light, vec3(1, 1, 1.75), vec3(1), 30000.0);   
+  
+    vec3 normal = normalize(vec3(loc.xy, 1.0));
+    
+    //calculate light
+    float diffCo, attenIn, d, diffIn;
+    
+    //calc Light diffuse and normalize it
+    vec3 l = light.center.xyz - vec3(loc, 1);
+    float lLen = length(l);
+    vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
+    
+    //calculate the light diffuse coefficient 
+    diffCo = max(0.0, dot(normal, L));
+    
+    //calc distance from light to surface
+    d = sqrt((loc.x - light.center.x) * (loc.x - light.center.x) + 
+             (loc.y - light.center.y) * (loc.y - light.center.y));
+    
+    //calc Attenuation
+    attenIn = 1.0/(1.0 + d / light.intensity + (d * d)/ (light.intensity * light.intensity));
+    
+    //calc diffuse intensity
+    diffIn = diffCo * attenIn;
+    
+    vec4 diffColo = texture(iChannel0, loc);
+    
+    vec3 color = diffIn * diffColo.xyz * light.color;
+    
+    return vec4(color, 1);
 }
 
 // calcColor: calculate the color of current pixel
@@ -201,9 +246,7 @@ color4 calcColor(in sViewport vp, in sRay ray)
     sCoord loc = px / res;
     loc *= ratio;
     
-    vec3 normal = normalize(vec3(loc.xy, 1.0));
-    
-    return vec4(normal, 1);
+    //return Lambertian(loc);
     
     //float time = iTime;
     //loc = distortion(ratio, loc, time);
