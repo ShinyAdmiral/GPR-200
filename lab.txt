@@ -207,33 +207,36 @@ color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
                sin(time) * 0.5 + 0.5);
 }
 
-vec2 distortion(sScalar ratio, vec2 loc, float time){
-	return ratio * tan(loc) * tan(loc) + time * 0.5f;
+color4 distortion(sampler2D tex, sScalar ratio, vec2 loc, float time){
+	return texture(iChannel1, ratio * tan(loc) * tan(loc) + time * 0.5f);
+}
+
+vec3 makeNormal(vec3 vector){
+	float lenInv = 1.0 / length(vector);
+    return vector * lenInv;
 }
 
 color4 Lambertian (sCoord loc){
 	pointLight light;
-    initLight(light, vec3(1, 1, 1.75), vec3(1), 30000.0);   
+    initLight(light, vec3(1, 1, 1.75), vec3(1), 3000.0);   
   
-    vec3 normal = normalize(vec3(loc.xy, 1.0));
+    vec3 normal = makeNormal(vec3(loc.xy, 1.0));
     
     //calculate light
     float diffCo, attenIn, d, diffIn;
     
     //calc Light diffuse and normalize it
-    vec3 l = light.center.xyz - vec3(loc, 1);
-    float lLen = length(l);
-    vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
+    vec3 L = makeNormal(light.center.xyz - vec3(loc, 1));
     
     //calculate the light diffuse coefficient 
     diffCo = max(0.0, dot(normal, L));
     
     //calc distance from light to surface
-    d = sqrt((loc.x - light.center.x) * (loc.x - light.center.x) + 
-             (loc.y - light.center.y) * (loc.y - light.center.y));
+    d = distance(loc, light.center.xy);
     
     //calc Attenuation
-    attenIn = 1.0/(1.0 + d / light.intensity + (d * d)/ (light.intensity * light.intensity));
+    float invIn = 1.0 / light.intensity;
+    attenIn = 1.0/(1.0 + d * invIn + (d * d) * invIn * invIn);
     
     //calc diffuse intensity
     diffIn = diffCo * attenIn;
@@ -246,43 +249,56 @@ color4 Lambertian (sCoord loc){
 }
 
 // Source for math: https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
-vec3 rotateRay(sRay ray, float rad, const int axis){
+vec3 rotateRayZ(sRay ray, float rad){
+    float x, y, z, x_, y_, z_;
+    x = ray.direction.x;
+    y = ray.direction.y;
+    z = ray.direction.z;
+
+    x_ = x * cos(rad) - y * sin(rad);
+    y_ = y * sin(rad) + y * cos(rad);
+    z_ = z;
+        
+    return vec3(x_, y_ * sin(iTime), z_);
+}
+
+vec3 rotateRayY(sRay ray, float rad){
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
     y = ray.direction.y;
     z = ray.direction.z;
     
-    switch (axis){
-        //ROTATE AROUND THE Z AXIS
-    	case (0):
-        	x_ = x * cos(rad) - y * sin(rad);
-        	y_ = y * sin(rad) + y * cos(rad);
-        	z_ = z;
-        	break;
-        
-        //ROTATE AROUND THE Y AXIS
-        case (1):
-        	x_ = x * cos(rad) + z * sin(rad);
-			y_ = y;
-			z_ = -x * sin(rad) + z * cos(rad);
-        	break;
-        
-        //ROTATE AROUND THE X AXIS
-        case (2):
-        	x_ = x;
-			y_ = y * cos(rad) - z * sin(rad);
-			z_ = y * sin(rad) + z * cos(rad);
-        	break;
-    }
-    return vec3(x_, y_, z_);
+    //ROTATE AROUND THE Y AXIS
+    x_ = x * cos(rad) + z * sin(rad);
+	y_ = y;
+	z_ = -x * sin(rad) + z * cos(rad);
+       
+    return vec3(x_, y_ * sin(iTime), z_);
+}
+
+vec3 rotateRayX(sRay ray, float rad){
+    float x, y, z, x_, y_, z_;
+    x = ray.direction.x;
+    y = ray.direction.y;
+    z = ray.direction.z;
+    
+    //ROTATE AROUND THE X AXIS
+    x_ = x;
+	y_ = y * cos(rad) - z * sin(rad);
+	z_ = y * sin(rad) + z * cos(rad);
+
+    return vec3(x_, y_ * sin(iTime), z_);
 }
 
 color4 blackhole(vec2 pos, sampler2D tex, sCoord loc, sCoord px, float time){
-    vec2 warp = pos * pow(distance(pos, px), -3.0) * 200.0;
+    float dist = distance(pos, px);
+    float distInv = 1.0 / dist;
+    
+    vec2 warp = pos * distInv * distInv * distInv * 200.0;
     warp = warp * -cos(time);
     loc = loc + warp;
    	
-    float light =  clamp(0.05 * distance(pos, px) - 2.0 + abs(cos(time)), 0.0, 1.0);
+    float light =  clamp(0.05 * dist - 2.0 + abs(cos(time)), 0.0, 1.0);
     
     color4 color = texture(tex, loc + sin(time));
     
@@ -316,10 +332,8 @@ color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
         float diffCo, attenIn, d, diffIn;
 
         //calc Light diffuse and normalize it
-        vec3 l = light.center.xyz - vec3(loc, 1);
-        float lLen = length(l);
-        vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
-
+        vec3 L = makeNormal(light.center.xyz - vec3(loc, 1));
+        
         //calculate the light diffuse coefficient 
         diffCo = max(0.0, dot(N, L));
 
@@ -327,7 +341,8 @@ color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
         d = distance(dp, light.center);
 
         //calc Attenuation
-        attenIn = 1.0/(1.0 + d / light.intensity + (d * d)/ (light.intensity * light.intensity));
+    	float invIn = 1.0 / light.intensity;
+    	attenIn = 1.0/(1.0 + d * invIn + (d * d) * invIn * invIn);
 
         //calc diffuse intensity
         diffIn = diffCo * attenIn;
@@ -344,40 +359,36 @@ color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
     return vec4(0.5);
 }
 
-// calcColor: calculate the color of current pixel
-//	  vp:  input viewport info
-//	  ray: input ray info
-color4 calcColor(in sViewport vp, in sRay ray)
-{
-    sCoord px = vp.pixelCoord;
-    sDCoord res = iChannelResolution[0].xy;
-    sScalar ratio = res.y * vp.resolutionInv.y;
-    sCoord loc = px / res;
-    loc *= ratio;
-    
-    //effect 4
-    //ray.direction.xyz = rotateRay(ray, mod(iTime, 2. * pi), 1);
-    //return texture(iChannel2, ray.direction.xyz);
-    
-    //effect bonus 2
-    //return ballLighting(loc, ray, iChannel3);
-    
-	//effect 3
-    //return Lambertian(loc);
-    
-    //effect bonus 1
-    //return blackhole(vec2(400.0, 225.0), iChannel1, loc, px, iTime);
-    
-    //effect 2
-    //float time = iTime;
-    //loc = distortion(ratio, loc, time);
-    //return texture(iChannel1, loc);
-    
-    //effect 1
-    //return crossfade(iChannel0, iChannel1, loc, iTime);
-    
+struct effectData{
+	sCoord px;
+	sDCoord res; 
+	sScalar ratio;
+	sCoord loc;
+};
+
+color4 calcEffect1(effectData dat, sampler2D tex1, sampler2D tex2, float time){
+	return crossfade(tex1, tex2, dat.loc * dat.ratio, time);
 }
 
+color4 calcEffect2(effectData dat, sampler2D tex, float time){
+	return distortion(tex, dat.ratio, dat.loc, time);
+}
+
+color4 calcEffect3(effectData dat){
+	return Lambertian(dat.loc * dat.ratio);
+}
+
+color4 calcEffect4(samplerCube tex, sRay ray, float time){
+	return texture(tex, rotateRayY(ray, mod(time, 2. * pi)));
+}
+
+color4 calcEffectBonus1(sampler2D tex, effectData dat, float time){
+	return blackhole(vec2(400.0, 225.0), tex, dat.loc * dat.ratio, dat.px, time);
+}
+
+color4 calcEffectBonus2(effectData dat, sRay ray, sampler2D tex){
+	return ballLighting(dat.loc * dat.ratio, ray, tex);
+}
 
 //------------------------------------------------------------
 // SHADERTOY MAIN
@@ -400,5 +411,18 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     // render
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
-    fragColor += calcColor(vp, ray);
+    
+    effectData dat;
+    
+    dat.px = vp.pixelCoord;
+    dat.res = iChannelResolution[0].xy;
+    dat.ratio = dat.res.y * vp.resolutionInv.y;
+    dat.loc = dat.px / dat.res;
+    
+    //fragColor += calcEffect1(dat, iChannel0, iChannel1, iTime);
+    //fragColor += calcEffect2(dat, iChannel0, iTime);
+    //fragColor += calcEffect3(dat);
+    //fragColor += calcEffect4(iChannel2, ray, iTime);
+    //fragColor += calcEffectBonus1(iChannel1, dat, iTime);
+    //fragColor += calcEffectBonus2(dat, ray, iChannel3);
 }
