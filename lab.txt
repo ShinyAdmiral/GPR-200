@@ -165,6 +165,10 @@ void initRayOrtho(out sRay ray,
     initRayPersp(ray, eyePosition + sBasis(viewport.xy, 0.0), viewport);
 }
 
+//------------------------------------------------------------
+// LIGHT INFO
+
+
 
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
@@ -175,6 +179,10 @@ color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
                sin(time) * 0.5 + 0.5);
 }
 
+vec2 distortion(sScalar ratio, vec2 loc, float time)
+{
+	return ratio * tan(loc) * tan(loc) + time * 0.5f;
+}
 
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
@@ -191,9 +199,17 @@ color4 calcColor(in sViewport vp, in sRay ray)
     sDCoord res = iChannelResolution[0].xy;
     sScalar ratio = res.y * vp.resolutionInv.y;
     sCoord loc = px / res;
-    loc = ratio * loc;
-
-    return crossfade(iChannel0, iChannel1, loc, iTime);
+    loc *= ratio;
+    
+    vec3 normal = normalize(vec3(loc.xy, 1.0));
+    
+    return vec4(normal, 1);
+    
+    //float time = iTime;
+    //loc = distortion(ratio, loc, time);
+    //return texture(iChannel1, loc);
+    
+    //return crossfade(iChannel0, iChannel1, loc, iTime);
 }
 
 
