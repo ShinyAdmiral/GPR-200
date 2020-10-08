@@ -1,4 +1,4 @@
-// Author:             Aidan Wright and Andrew Hunt
+// Author:             Aiden Wright and Andrew Hunt
 // 
 // Class:              GPR-200-02
 // 
