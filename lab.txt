@@ -202,24 +202,29 @@ void initSphere (out sphere obj, in vec3 center, in float radius){
 // RENDERING FUNCTIONS
 
 color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
+    //fade between the two textures
 	return mix(texture(tex1, location.xy), 
                texture(tex2, location.xy), 
                sin(time) * 0.5 + 0.5);
 }
 
 color4 distortion(sampler2D tex, sScalar ratio, vec2 loc, float time){
+    //distort the texture
 	return texture(iChannel1, ratio * tan(loc) * tan(loc) + time * 0.5f);
 }
 
 vec3 makeNormal(vec3 vector){
+    //make a vetor a normal
 	float lenInv = 1.0 / length(vector);
     return vector * lenInv;
 }
 
 color4 Lambertian (sCoord loc){
+    //declare and initialize light
 	pointLight light;
     initLight(light, vec3(1, 1, 1.75), vec3(1), 3000.0);   
-  
+  	
+    //calc normal of location
     vec3 normal = makeNormal(vec3(loc.xy, 1.0));
     
     //calculate light
@@ -241,42 +246,49 @@ color4 Lambertian (sCoord loc){
     //calc diffuse intensity
     diffIn = diffCo * attenIn;
     
+    //calc diffuse color
     vec4 diffColo = texture(iChannel0, loc);
     
+    //calc final colot
     vec3 color = diffIn * diffColo.xyz * light.color;
-    
     return vec4(color, 1);
 }
 
 // Source for math: https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
 vec3 rotateRayZ(sRay ray, float rad){
+    //declare and initalize initial ray variables
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
     y = ray.direction.y;
     z = ray.direction.z;
 
+    //ROTATE AROUND THE Z AXIS
     x_ = x * cos(rad) - y * sin(rad);
     y_ = y * sin(rad) + y * cos(rad);
     z_ = z;
-        
+    
+    //return a stretch to  distort
     return vec3(x_, y_ * sin(iTime), z_);
 }
 
 vec3 rotateRayY(sRay ray, float rad){
+    //declare and initalize initial ray variables
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
     y = ray.direction.y;
     z = ray.direction.z;
-    
+
     //ROTATE AROUND THE Y AXIS
     x_ = x * cos(rad) + z * sin(rad);
 	y_ = y;
 	z_ = -x * sin(rad) + z * cos(rad);
-       
+    
+    //return a stretch to  distort
     return vec3(x_, y_ * sin(iTime), z_);
 }
 
 vec3 rotateRayX(sRay ray, float rad){
+    //declare and initalize initial ray variables
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
     y = ray.direction.y;
@@ -286,34 +298,42 @@ vec3 rotateRayX(sRay ray, float rad){
     x_ = x;
 	y_ = y * cos(rad) - z * sin(rad);
 	z_ = y * sin(rad) + z * cos(rad);
-
+	
+    //return a stretch to  distort
     return vec3(x_, y_ * sin(iTime), z_);
 }
 
+//Source: Jorzi | https://www.shadertoy.com/view/XdX3DN
 color4 blackhole(vec2 pos, sampler2D tex, sCoord loc, sCoord px, float time){
+    //calc distance between blackhole and pixel
     float dist = distance(pos, px);
     float distInv = 1.0 / dist;
     
-    vec2 warp = pos * distInv * distInv * distInv * 200.0;
+    //calculate warp
+    vec2 warp = pos * distInv * distInv * distInv * 200.0; //Jorzi
     warp = warp * -cos(time);
     loc = loc + warp;
    	
-    float light =  clamp(0.05 * dist - 2.0 + abs(cos(time)), 0.0, 1.0);
+    //calc light from singularity
+    float light =  clamp(0.05 * dist - 2.0 + abs(cos(time)), 0.0, 1.0); //Jorzi
     
+    //calc color around black hole
     color4 color = texture(tex, loc + sin(time));
     
+    //
     return color * light;
 }
 
 color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
-	//declare sphere
+	//declare and initialize sphere
     sphere obj;
-    //initiallize sphere
     initSphere(obj, vec3(0.0, 0.0, -4.0), 0.5);
     
+    //declare and initialize light
     pointLight light;
     initLight(light, vec3(5, 8, 10), vec3(1), 30000.0); 
-
+	
+    //calc point of a hitting ray
     vec3 dp;
     dp.xy = ray.direction.xy - obj.center.xy;
     
@@ -347,15 +367,18 @@ color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
         //calc diffuse intensity
         diffIn = diffCo * attenIn;
 		
-        float theta = atan(N.x/N.z + pi *2.);
+        //calc warp for warping images around the sphere
+        float warp = atan(N.x/N.z + pi *2.);
         
-        vec3 diffColo = texture(tex, loc * theta + sin(iTime)).rgb;
-
+        //calc sphere color
+        vec3 diffColo = texture(tex, loc * warp + sin(iTime)).rgb;
+		
+        //with light
         vec3 color = diffIn * diffColo * light.color;
-        
         return vec4(color, 1);
     }
     
+    //make grey background
     return vec4(0.5);
 }
 
@@ -367,26 +390,38 @@ struct effectData{
 };
 
 color4 calcEffect1(effectData dat, sampler2D tex1, sampler2D tex2, float time){
+    //effect 1
+    //fade between two different textures
 	return crossfade(tex1, tex2, dat.loc * dat.ratio, time);
 }
 
 color4 calcEffect2(effectData dat, sampler2D tex, float time){
+    //effect 2
+    //make a distortion for a texture
 	return distortion(tex, dat.ratio, dat.loc, time);
 }
 
 color4 calcEffect3(effectData dat){
+    //effect 3
+    //make a light for a 2D texture
 	return Lambertian(dat.loc * dat.ratio);
 }
 
 color4 calcEffect4(samplerCube tex, sRay ray, float time){
+    //effect 4
+    //make a skybox with a distortion effect
 	return texture(tex, rotateRayY(ray, mod(time, 2. * pi)));
 }
 
 color4 calcEffectBonus1(sampler2D tex, effectData dat, float time){
+    //effect ex 1
+    //make a blackhole in space
 	return blackhole(vec2(400.0, 225.0), tex, dat.loc * dat.ratio, dat.px, time);
 }
 
 color4 calcEffectBonus2(effectData dat, sRay ray, sampler2D tex){
+    //effect ex 2
+    //make a ball that lights up
 	return ballLighting(dat.loc * dat.ratio, ray, tex);
 }
 
@@ -419,7 +454,7 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     dat.ratio = dat.res.y * vp.resolutionInv.y;
     dat.loc = dat.px / dat.res;
     
-    //fragColor += calcEffect1(dat, iChannel0, iChannel1, iTime);
+    fragColor += calcEffect1(dat, iChannel0, iChannel1, iTime);
     //fragColor += calcEffect2(dat, iChannel0, iTime);
     //fragColor += calcEffect3(dat);
     //fragColor += calcEffect4(iChannel2, ray, iTime);
