@@ -1,3 +1,40 @@
+// Author:             Aidan Wright and Andrew Hunt
+// 
+// Class:              GPR-200-02
+// 
+// Assignment:         Lab 5
+// 
+// Date Assigned:      1 Oct 2020
+// 
+// Due Date:           14:15 8 Oct 2020 
+// 
+// 
+// Description:
+// 
+// Different Shadertoy effects using textures.
+// Each effect is commented and numbered.
+// 
+// 
+// Certification of Authenticity:
+// 
+// I certify that this is entirely my own work, except where I have given fully-documented 
+// references to the work of others. I understand the definition and consequences of plagiarism
+// and acknowledge that the assessor of this assignment may, for the purpose of assessing 
+// this assignment:
+// 
+//  -    Reproduce this assignment and provide a copy to another member of academic staff; 
+// 		and/or
+// 
+//  -    Communicate a copy of this assignment to a plagiarism checking service (which may then 
+// 		retain a copy of this assignment on its database for the purpose of future plagiarism checking)
+
+//------------------------------------------------------------
+// Sources Used
+// https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
+// Source: Jorzi | https://www.shadertoy.com/view/XdX3DN
+//
+// Certian Used for calculations
+
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 
 //------------------------------------------------------------
@@ -30,8 +67,7 @@
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
 
-//
-//
+//definition of pi
 #define pi 3.1415926535897932384626
 
 // asPoint: promote a 3D vector into a 4D vector 
@@ -210,7 +246,7 @@ color4 crossfade(sampler2D tex1, sampler2D tex2, sCoord location, float time){
 
 color4 distortion(sampler2D tex, sScalar ratio, vec2 loc, float time){
     //distort the texture
-	return texture(iChannel1, ratio * tan(loc) * tan(loc) + time * 0.5f);
+	return texture(tex, ratio * tan(loc) * tan(loc) + time * 0.5f);
 }
 
 vec3 makeNormal(vec3 vector){
@@ -255,7 +291,7 @@ color4 Lambertian (sCoord loc){
 }
 
 // Source for math: https://stackoverflow.com/questions/14607640/rotating-a-vector-in-3d-space
-vec3 rotateRayZ(sRay ray, float rad){
+vec3 rotateRayZ(sRay ray, float rad, float time){
     //declare and initalize initial ray variables
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
@@ -268,10 +304,10 @@ vec3 rotateRayZ(sRay ray, float rad){
     z_ = z;
     
     //return a stretch to  distort
-    return vec3(x_, y_ * sin(iTime), z_);
+    return vec3(x_, y_ * sin(time), z_);
 }
 
-vec3 rotateRayY(sRay ray, float rad){
+vec3 rotateRayY(sRay ray, float rad, float time){
     //declare and initalize initial ray variables
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
@@ -284,10 +320,10 @@ vec3 rotateRayY(sRay ray, float rad){
 	z_ = -x * sin(rad) + z * cos(rad);
     
     //return a stretch to  distort
-    return vec3(x_, y_ * sin(iTime), z_);
+    return vec3(x_, y_ * sin(time), z_);
 }
 
-vec3 rotateRayX(sRay ray, float rad){
+vec3 rotateRayX(sRay ray, float rad, float time){
     //declare and initalize initial ray variables
     float x, y, z, x_, y_, z_;
     x = ray.direction.x;
@@ -300,7 +336,7 @@ vec3 rotateRayX(sRay ray, float rad){
 	z_ = y * sin(rad) + z * cos(rad);
 	
     //return a stretch to  distort
-    return vec3(x_, y_ * sin(iTime), z_);
+    return vec3(x_, y_ * sin(time), z_);
 }
 
 //Source: Jorzi | https://www.shadertoy.com/view/XdX3DN
@@ -320,11 +356,11 @@ color4 blackhole(vec2 pos, sampler2D tex, sCoord loc, sCoord px, float time){
     //calc color around black hole
     color4 color = texture(tex, loc + sin(time));
     
-    //
+    //return color
     return color * light;
 }
 
-color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
+color4 ballLighting(sCoord loc, sRay ray, sampler2D tex, float time){
 	//declare and initialize sphere
     sphere obj;
     initSphere(obj, vec3(0.0, 0.0, -4.0), 0.5);
@@ -371,7 +407,7 @@ color4 ballLighting(sCoord loc, sRay ray, sampler2D tex){
         float warp = atan(N.x/N.z + pi *2.);
         
         //calc sphere color
-        vec3 diffColo = texture(tex, loc * warp + sin(iTime)).rgb;
+        vec3 diffColo = texture(tex, loc * warp + sin(time)).rgb;
 		
         //with light
         vec3 color = diffIn * diffColo * light.color;
@@ -389,6 +425,9 @@ struct effectData{
 	sCoord loc;
 };
 
+//-----------------------------------------------------------
+//Effect Calling the functions passing the correct params
+    
 color4 calcEffect1(effectData dat, sampler2D tex1, sampler2D tex2, float time){
     //effect 1
     //fade between two different textures
@@ -410,7 +449,7 @@ color4 calcEffect3(effectData dat){
 color4 calcEffect4(samplerCube tex, sRay ray, float time){
     //effect 4
     //make a skybox with a distortion effect
-	return texture(tex, rotateRayY(ray, mod(time, 2. * pi)));
+	return texture(tex, rotateRayY(ray, mod(time, 2. * pi), time));
 }
 
 color4 calcEffectBonus1(sampler2D tex, effectData dat, float time){
@@ -419,10 +458,10 @@ color4 calcEffectBonus1(sampler2D tex, effectData dat, float time){
 	return blackhole(vec2(400.0, 225.0), tex, dat.loc * dat.ratio, dat.px, time);
 }
 
-color4 calcEffectBonus2(effectData dat, sRay ray, sampler2D tex){
+color4 calcEffectBonus2(effectData dat, sRay ray, sampler2D tex, float time){
     //effect ex 2
     //make a ball that lights up
-	return ballLighting(dat.loc * dat.ratio, ray, tex);
+	return ballLighting(dat.loc * dat.ratio, ray, tex, time);
 }
 
 //------------------------------------------------------------
@@ -449,15 +488,16 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     
     effectData dat;
     
+    //calc texture data
     dat.px = vp.pixelCoord;
     dat.res = iChannelResolution[0].xy;
     dat.ratio = dat.res.y * vp.resolutionInv.y;
     dat.loc = dat.px / dat.res;
     
-    fragColor += calcEffect1(dat, iChannel0, iChannel1, iTime);
-    //fragColor += calcEffect2(dat, iChannel0, iTime);
+    //fragColor += calcEffect1(dat, iChannel0, iChannel1, iTime);
+    //fragColor += calcEffect2(dat, iChannel1, iTime);
     //fragColor += calcEffect3(dat);
     //fragColor += calcEffect4(iChannel2, ray, iTime);
     //fragColor += calcEffectBonus1(iChannel1, dat, iTime);
-    //fragColor += calcEffectBonus2(dat, ray, iChannel3);
+    //fragColor += calcEffectBonus2(dat, ray, iChannel3, iTime);
 }
