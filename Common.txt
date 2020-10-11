@@ -174,15 +174,6 @@ void initRayOrtho(out sRay ray,
     initRayPersp(ray, eyePosition + sBasis(viewport.xy, 0.0), viewport);
 }
 
-vec3 rotateCubeY(sRay ray, float rad){
-    mat3 rm = mat3(cos(rad), 0.0, -sin(rad),
-            	        0.0, 1.0,       0.0, 
-                   sin(rad), 0.0,  cos(rad));
-    
-   	return ray.direction.xyz * rm;
-}
-
-
 //------------------------------------------------------------
 /*
 // GLSL FRAGMENT SHADER STRUCTURE WITH COMMON TAB
