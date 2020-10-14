@@ -33,7 +33,6 @@
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
 
-
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
 //    v: input 3D vector to be converted
@@ -71,6 +70,14 @@ sScalar lengthSq(sVector x)
     return dot(x, x);
 }
 
+//define matrix 5
+struct mat5{
+	float a[5];
+    float b[5];
+    float c[5];
+    float d[5];
+    float e[5];
+};
 
 //------------------------------------------------------------
 // VIEWPORT INFO
@@ -174,6 +181,87 @@ void initRayOrtho(out sRay ray,
     initRayPersp(ray, eyePosition + sBasis(viewport.xy, 0.0), viewport);
 }
 
+//Rotate Cube
+vec3 rotateCubeY(sRay ray, float rad){
+    float cosNum = cos(rad);
+    float sinNum = sin(rad);
+    
+    mat3 rm = mat3(  cosNum, 0.0,   -sinNum,
+            	        0.0, 1.0,       0.0, 
+                     sinNum, 0.0,    cosNum);
+    
+   	return ray.direction.xyz * rm;
+}
+
+//Luminosity
+float getLum(in color4 color)
+{
+    //must be optimized
+	float cMax = max(max(color.x, color.y), color.z);
+    float cMin = min(min(color.x, color.y), color.z);
+    return (cMax + cMin) * 0.5;
+}
+
+vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res, mat5 kernel){
+	vec4 color = vec4(0.0);
+    
+    color += texture(tex, (coord + vec2(-2.0,  2.0)) * res) * kernel.a[0];
+    color += texture(tex, (coord + vec2(-2.0,  1.0)) * res) * kernel.a[1];
+    color += texture(tex, (coord + vec2(-2.0,  0.0)) * res) * kernel.a[2];
+    color += texture(tex, (coord + vec2(-2.0, -1.0)) * res) * kernel.a[3];
+    color += texture(tex, (coord + vec2(-2.0, -2.0)) * res) * kernel.a[4];
+    
+    color += texture(tex, (coord + vec2(-1.0,  2.0)) * res) * kernel.b[0];
+    color += texture(tex, (coord + vec2(-1.0,  1.0)) * res) * kernel.b[1];
+    color += texture(tex, (coord + vec2(-1.0,  0.0)) * res) * kernel.b[2];
+    color += texture(tex, (coord + vec2(-1.0, -1.0)) * res) * kernel.b[3];
+    color += texture(tex, (coord + vec2(-1.0, -2.0)) * res) * kernel.b[4];
+    
+    color += texture(tex, (coord + vec2( 0.0,  2.0)) * res) * kernel.c[0];
+    color += texture(tex, (coord + vec2( 0.0,  1.0)) * res) * kernel.c[1];
+    color += texture(tex, (coord + vec2( 0.0,  0.0)) * res) * kernel.c[2];
+    color += texture(tex, (coord + vec2( 0.0, -1.0)) * res) * kernel.c[3];
+    color += texture(tex, (coord + vec2( 0.0, -2.0)) * res) * kernel.c[4];
+    
+    color += texture(tex, (coord + vec2( 1.0,  2.0)) * res) * kernel.d[0];
+    color += texture(tex, (coord + vec2( 1.0,  1.0)) * res) * kernel.d[1];
+    color += texture(tex, (coord + vec2( 1.0,  0.0)) * res) * kernel.d[2];
+    color += texture(tex, (coord + vec2( 1.0, -1.0)) * res) * kernel.d[3];
+    color += texture(tex, (coord + vec2( 1.0, -2.0)) * res) * kernel.d[4];
+    
+    color += texture(tex, (coord + vec2( 2.0,  2.0)) * res) * kernel.e[0];
+    color += texture(tex, (coord + vec2( 2.0,  1.0)) * res) * kernel.e[1];
+    color += texture(tex, (coord + vec2( 2.0,  0.0)) * res) * kernel.e[2];
+    color += texture(tex, (coord + vec2( 2.0, -1.0)) * res) * kernel.e[3];
+    color += texture(tex, (coord + vec2( 2.0, -2.0)) * res) * kernel.e[4];
+    
+	return color * 0.01612903225;
+}
+
+vec4 add(sampler2D tex1, sampler2D tex2, vec2 uv)
+{
+	vec4 color = vec4(0.0);
+    
+    color += texture(tex1, uv);
+    color += texture(tex2, uv);
+    
+    return color;
+}
+
+vec4 screen(sampler2D tex1, sampler2D tex2, vec2 uv)
+{
+    vec4 c1 = texture(tex1, uv);
+    vec4 c2 = texture(tex2, uv);
+    c1 = vec4(1. - c1.x, 1. - c1.y, 1. - c1.z, 1. - c1.w);
+    c2 = vec4(1. - c2.x, 1. - c2.y, 1. - c2.z, 1. - c2.w);
+    c1 *= c2;
+    return vec4(1. - c1.x, 1. - c1.y, 1. - c1.z, 1. - c1.w);
+}
+
+vec4 multiply(sampler2D tex1, sampler2D tex2, vec2 uv)
+{
+    return texture(tex1, uv) * texture(tex2, uv);
+}
 //------------------------------------------------------------
 /*
 // GLSL FRAGMENT SHADER STRUCTURE WITH COMMON TAB

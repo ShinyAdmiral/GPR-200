@@ -4,17 +4,9 @@
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
 
-vec3 rotateCubeY(sRay ray, float rad){
-    mat3 rm = mat3(cos(rad), 0.0, -sin(rad),
-            	        0.0, 1.0,       0.0, 
-                   sin(rad), 0.0,  cos(rad));
-    
-   	return ray.direction.xyz * rm;
-}
-
 // calcColor: calculate the color of current pixel
-//	  vp:  input viewport info
-//	  ray: input ray info
+//      vp:  input viewport info
+//      ray: input ray info
 color4 calcColor(in sViewport vp, in sRay ray, samplerCube tex, float time)
 {
     // test inputs
@@ -22,7 +14,7 @@ color4 calcColor(in sViewport vp, in sRay ray, samplerCube tex, float time)
     //return color4(lengthSq(vp.viewportPoint.xy) >= 0.25); // pass
     //return color4(vp.uv, 0.0, 0.0);
     //return color4(vp.ndc, 0.0, 0.0);
-    return texture(tex, rotateCubeY(ray, mod(time, 2. * pi)));
+    return texture(tex, rotateCubeY(ray, time));
 }
 
 //------------------------------------------------------------

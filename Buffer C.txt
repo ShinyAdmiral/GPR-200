@@ -1,0 +1,15 @@
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{   
+    mat5 guassianKernel;
+        
+    guassianKernel.a = float[5](1.0, 2.0, 3.0, 2.0, 1.0);
+    guassianKernel.b = float[5](2.0, 3.0, 4.0, 3.0, 2.0);
+    guassianKernel.c = float[5](3.0, 4.0, 6.0, 4.0, 3.0);
+    guassianKernel.d = float[5](2.0, 3.0, 4.0, 3.0, 2.0);
+    guassianKernel.e = float[5](1.0, 2.0, 3.0, 2.0, 1.0);
+    
+    vec2 invRes = 1.0 / iChannelResolution[0].xy;
+    
+    fragColor = guassianBlur(iChannel0, fragCoord, invRes, guassianKernel);
+    
+}

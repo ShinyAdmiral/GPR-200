@@ -8,13 +8,6 @@
 //    fragColor: output final color for current pixel
 //    fragCoord: input location of current pixel in image (in pixels)
 
-float getLum(in color4 color)
-{
-	float cMax = max(max(color.x, color.y), color.z);
-    float cMin = min(min(color.x, color.y), color.z);
-    return (cMax + cMin) * 0.5;
-}
-
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
     // setup
@@ -25,5 +18,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     // set iChannel0 to 'Misc/Buffer A' and fetch sample
     color4 texturePoint = texture(iChannel0, uv);
     float lum = getLum(texturePoint);
-    fragColor =vec4(vec3(texturePoint)*lum*lum*lum*lum, 1.0);
+    fragColor =vec4(vec3(texturePoint)*lum *lum *lum *lum, 1.0);
 }
