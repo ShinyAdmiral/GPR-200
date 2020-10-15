@@ -1,0 +1,11 @@
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    //normalized screen coords
+    sCoord uv = fragCoord / iResolution.xy;
+    
+    //get mouse coords
+    uv = iMouse.xy / iResolution.xy;
+    
+    //return mouse coords
+    fragColor = vec4(uv, uv);
+}

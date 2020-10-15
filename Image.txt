@@ -9,24 +9,25 @@
 //    fragCoord: input location of current pixel in image (in pixels)
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
-    // setup
-    // test UV for input image
+    //get normalized screen coords
     sCoord uv = fragCoord / iChannelResolution[0].xy;
     
-    // TESTING
-    // set iChannel0 to 'Misc/Buffer A' and fetch sample
-    
+    //add convolution algorithm 
     //fragColor = add(iChannel0, iChannel1, uv);
     
+    //screen convolution algorithm 
+    //fragColor = screen(iChannel0, iChannel1, uv);
+    
+    //multiply convolution algorithm 
+    //fragColor = multiply(iChannel0, iChannel1, uv);
+    
+    //get colors for next few algorithms
     vec4 color1 = texture(iChannel0, uv);
     vec4 color2 = texture(iChannel1, uv);
     
+    //mix convolution algorithm 
     //fragColor = mix(color1, color2, sin(iTime) * 0.5f + 0.5f);
     
-    fragColor = screen(iChannel0, iChannel1, uv);
-    
-    //fragColor = multiply(iChannel0, iChannel1, uv);
-    
-    
-    //fragColor = texture(iChannel1, uv);
+    //only for edge detection
+    fragColor = color1;
 }

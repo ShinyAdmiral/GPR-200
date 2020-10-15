@@ -70,14 +70,17 @@ sScalar lengthSq(sVector x)
     return dot(x, x);
 }
 
-//define matrix 5
-struct mat5{
-	float a[5];
-    float b[5];
-    float c[5];
-    float d[5];
-    float e[5];
-};
+//----------------------------
+//define matrix 5 (Not Used)
+//----------------------------
+
+//struct mat5{
+//	float a[5];
+//    float b[5];
+//    float c[5];
+//    float d[5];
+//    float e[5];
+//};
 
 //------------------------------------------------------------
 // VIEWPORT INFO
@@ -183,73 +186,122 @@ void initRayOrtho(out sRay ray,
 
 //Rotate Cube
 vec3 rotateCubeY(sRay ray, float rad){
+    //grab trig of time
     float cosNum = cos(rad);
     float sinNum = sin(rad);
     
+    //get rotation matrix of y coord with tim
     mat3 rm = mat3(  cosNum, 0.0,   -sinNum,
             	        0.0, 1.0,       0.0, 
                      sinNum, 0.0,    cosNum);
     
+    //return rotation
+   	return ray.direction.xyz * rm;
+}
+
+//Rotate Cube
+vec3 rotateCubeY(sRay ray, vec2 rad){
+    //grab trig of mouse input y
+    float cosNumY = cos(rad.y + pi);
+    float sinNumY = sin(rad.y + pi);
+    
+    //grab trig of mouse input x
+    float cosNumX = cos(-rad.x + pi);
+    float sinNumX = sin(-rad.x + pi);
+    
+    //get roptation matrix
+    mat3 rm = mat3(   cosNumX, sinNumX * sinNumY,    sinNumX * cosNumY,
+            	         	0, 	         cosNumY,         	  -sinNumY, 
+                     -sinNumX, cosNumX * sinNumY,    cosNumY * cosNumX);
+    
+    
+    //return rotation
    	return ray.direction.xyz * rm;
 }
 
 //Luminosity
+//Credit: https://en.wikipedia.org/wiki/Relative_luminance
 float getLum(in color4 color)
 {
-    //must be optimized
-	float cMax = max(max(color.x, color.y), color.z);
-    float cMin = min(min(color.x, color.y), color.z);
-    return (cMax + cMin) * 0.5;
+    //return luiminosity
+    return 0.2126 * color.x + 0.7152 * color.y + 0.0722 * color.z;
 }
 
-vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res, mat5 kernel){
+vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res){
+    //make temp color
 	vec4 color = vec4(0.0);
     
-    color += texture(tex, (coord + vec2(-2.0,  2.0)) * res) * kernel.a[0];
-    color += texture(tex, (coord + vec2(-2.0,  1.0)) * res) * kernel.a[1];
-    color += texture(tex, (coord + vec2(-2.0,  0.0)) * res) * kernel.a[2];
-    color += texture(tex, (coord + vec2(-2.0, -1.0)) * res) * kernel.a[3];
-    color += texture(tex, (coord + vec2(-2.0, -2.0)) * res) * kernel.a[4];
+    //add each sample to the final color after calculating color, 
+    //weight, and resolution of each pixel at the coord
     
-    color += texture(tex, (coord + vec2(-1.0,  2.0)) * res) * kernel.b[0];
-    color += texture(tex, (coord + vec2(-1.0,  1.0)) * res) * kernel.b[1];
-    color += texture(tex, (coord + vec2(-1.0,  0.0)) * res) * kernel.b[2];
-    color += texture(tex, (coord + vec2(-1.0, -1.0)) * res) * kernel.b[3];
-    color += texture(tex, (coord + vec2(-1.0, -2.0)) * res) * kernel.b[4];
+    //Please not that the gaussian weights have been averaged because
+    //samples are being taken from the corners of the sample blocks
+    color += texture(tex, (coord + vec2(-1.5,  -1.5)) * res) * 6.25;
+    color += texture(tex, (coord + vec2(-1.5,  -0.5)) * res) * 12.5;
+    color += texture(tex, (coord + vec2(-1.5,   0.5)) * res) * 12.5;
+    color += texture(tex, (coord + vec2(-1.5,   1.5)) * res) * 22.0;
     
-    color += texture(tex, (coord + vec2( 0.0,  2.0)) * res) * kernel.c[0];
-    color += texture(tex, (coord + vec2( 0.0,  1.0)) * res) * kernel.c[1];
-    color += texture(tex, (coord + vec2( 0.0,  0.0)) * res) * kernel.c[2];
-    color += texture(tex, (coord + vec2( 0.0, -1.0)) * res) * kernel.c[3];
-    color += texture(tex, (coord + vec2( 0.0, -2.0)) * res) * kernel.c[4];
+    color += texture(tex, (coord + vec2(-0.5,  -1.5)) * res) * 12.5;
+    color += texture(tex, (coord + vec2(-0.5,  -0.5)) * res) * 25.0;
+    color += texture(tex, (coord + vec2(-0.5,   0.5)) * res) * 25.0;
+    color += texture(tex, (coord + vec2(-0.5,   1.5)) * res) * 12.5;
     
-    color += texture(tex, (coord + vec2( 1.0,  2.0)) * res) * kernel.d[0];
-    color += texture(tex, (coord + vec2( 1.0,  1.0)) * res) * kernel.d[1];
-    color += texture(tex, (coord + vec2( 1.0,  0.0)) * res) * kernel.d[2];
-    color += texture(tex, (coord + vec2( 1.0, -1.0)) * res) * kernel.d[3];
-    color += texture(tex, (coord + vec2( 1.0, -2.0)) * res) * kernel.d[4];
+    color += texture(tex, (coord + vec2( 0.5,  -1.5)) * res) * 12.5;
+    color += texture(tex, (coord + vec2( 0.5,  -0.5)) * res) * 25.0;
+    color += texture(tex, (coord + vec2( 0.5,   0.5)) * res) * 25.0;
+    color += texture(tex, (coord + vec2( 0.5,   1.5)) * res) * 12.5;
     
-    color += texture(tex, (coord + vec2( 2.0,  2.0)) * res) * kernel.e[0];
-    color += texture(tex, (coord + vec2( 2.0,  1.0)) * res) * kernel.e[1];
-    color += texture(tex, (coord + vec2( 2.0,  0.0)) * res) * kernel.e[2];
-    color += texture(tex, (coord + vec2( 2.0, -1.0)) * res) * kernel.e[3];
-    color += texture(tex, (coord + vec2( 2.0, -2.0)) * res) * kernel.e[4];
+    color += texture(tex, (coord + vec2( 1.5,  -1.5)) * res) * 6.25;
+    color += texture(tex, (coord + vec2( 1.5,  -0.5)) * res) * 12.5;
+    color += texture(tex, (coord + vec2( 1.5,   0.5)) * res) * 12.5;
+    color += texture(tex, (coord + vec2( 1.5,   1.5)) * res) * 6.25;
     
-	return color * 0.01612903225;
+    //return color after weight inverse is multiplied
+	return color * 0.00390625;
+}
+
+vec4 edgeDetection(sampler2D tex, vec2 coord, vec2 res){
+    //make temp color
+	vec4 color = vec4(0.0);
+    
+    //add each sample to the final color after calculating color, 
+    //weight, and resolution of each pixel at the coord
+    color += texture(tex, (coord + vec2(-1.0,  -1.0)) * res) * -1.0;
+    color += texture(tex, (coord + vec2(-1.0,   0.0)) * res) * -1.0;
+    color += texture(tex, (coord + vec2(-1.0,   1.0)) * res) * -1.0;
+    
+    color += texture(tex, (coord + vec2( 0.0,  -1.0)) * res) * -1.0;
+    color += texture(tex, (coord + vec2( 0.0,   0.0)) * res) *  8.0;
+    color += texture(tex, (coord + vec2( 0.0,   1.0)) * res) * -1.0;
+    
+    color += texture(tex, (coord + vec2( 1.0,  -1.0)) * res) * -1.0;
+    color += texture(tex, (coord + vec2( 1.0,   0.0)) * res) * -1.0;
+    color += texture(tex, (coord + vec2( 1.0,   1.0)) * res) * -1.0;
+    
+    //return color. No inverse weight since -8 and 8 make 0
+	return color;
 }
 
 vec4 add(sampler2D tex1, sampler2D tex2, vec2 uv)
 {
+    //start with empty color
 	vec4 color = vec4(0.0);
     
+    //add both colors
     color += texture(tex1, uv);
     color += texture(tex2, uv);
     
+    //return color
     return color;
 }
 
+
+
+//Implements the screen convolution algorithm
+//Inverts the indiviual textures, multiplies those and then inverts the result.
 vec4 screen(sampler2D tex1, sampler2D tex2, vec2 uv)
 {
+    
     vec4 c1 = texture(tex1, uv);
     vec4 c2 = texture(tex2, uv);
     c1 = vec4(1. - c1.x, 1. - c1.y, 1. - c1.z, 1. - c1.w);
@@ -258,10 +310,53 @@ vec4 screen(sampler2D tex1, sampler2D tex2, vec2 uv)
     return vec4(1. - c1.x, 1. - c1.y, 1. - c1.z, 1. - c1.w);
 }
 
+//Multiply convolution algorithm 
+//Multiplies the two inputed textures together.
 vec4 multiply(sampler2D tex1, sampler2D tex2, vec2 uv)
 {
     return texture(tex1, uv) * texture(tex2, uv);
 }
+
+// --------------------------------------------------------------------
+// Used for the Old Gaussian Blur
+// --------------------------------------------------------------------
+
+//vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res, mat5 kernel){
+//	vec4 color = vec4(0.0);
+//    
+//    color += texture(tex, (coord + vec2(-2.0,  2.0)) * res) * kernel.a[0];
+//    color += texture(tex, (coord + vec2(-2.0,  1.0)) * res) * kernel.a[1];
+//    color += texture(tex, (coord + vec2(-2.0,  0.0)) * res) * kernel.a[2];
+//    color += texture(tex, (coord + vec2(-2.0, -1.0)) * res) * kernel.a[3];
+//    color += texture(tex, (coord + vec2(-2.0, -2.0)) * res) * kernel.a[4];
+//    
+//    color += texture(tex, (coord + vec2(-1.0,  2.0)) * res) * kernel.b[0];
+//    color += texture(tex, (coord + vec2(-1.0,  1.0)) * res) * kernel.b[1];
+//    color += texture(tex, (coord + vec2(-1.0,  0.0)) * res) * kernel.b[2];
+//    color += texture(tex, (coord + vec2(-1.0, -1.0)) * res) * kernel.b[3];
+//    color += texture(tex, (coord + vec2(-1.0, -2.0)) * res) * kernel.b[4];
+//    
+//    color += texture(tex, (coord + vec2( 0.0,  2.0)) * res) * kernel.c[0];
+//    color += texture(tex, (coord + vec2( 0.0,  1.0)) * res) * kernel.c[1];
+//    color += texture(tex, (coord + vec2( 0.0,  0.0)) * res) * kernel.c[2];
+//    color += texture(tex, (coord + vec2( 0.0, -1.0)) * res) * kernel.c[3];
+//    color += texture(tex, (coord + vec2( 0.0, -2.0)) * res) * kernel.c[4];
+//    
+//    color += texture(tex, (coord + vec2( 1.0,  2.0)) * res) * kernel.b[0];
+//    color += texture(tex, (coord + vec2( 1.0,  1.0)) * res) * kernel.b[1];
+//    color += texture(tex, (coord + vec2( 1.0,  0.0)) * res) * kernel.b[2];
+//    color += texture(tex, (coord + vec2( 1.0, -1.0)) * res) * kernel.b[3];
+//    color += texture(tex, (coord + vec2( 1.0, -2.0)) * res) * kernel.b[4];
+//    
+//    color += texture(tex, (coord + vec2( 2.0,  2.0)) * res) * kernel.a[0];
+//    color += texture(tex, (coord + vec2( 2.0,  1.0)) * res) * kernel.a[1];
+//    color += texture(tex, (coord + vec2( 2.0,  0.0)) * res) * kernel.a[2];
+//    color += texture(tex, (coord + vec2( 2.0, -1.0)) * res) * kernel.a[3];
+//    color += texture(tex, (coord + vec2( 2.0, -2.0)) * res) * kernel.a[4];
+//    
+//	return color * 1./256.;
+//}
+
 //------------------------------------------------------------
 /*
 // GLSL FRAGMENT SHADER STRUCTURE WITH COMMON TAB

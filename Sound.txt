@@ -1,0 +1,33 @@
+//Plays inputed sound
+float playSound(float frequency, float time)
+{
+    return sin(6.2831 * frequency * time) * exp(-mod(time, 0.2));
+}
+
+vec2 mainSound( float time )
+{
+    //Four notes used in song
+    float g = 195.9977;
+    float c = 261.6256;
+    float f = 174.6141;
+    float b = 246.9417;
+    
+    //The number of notes used in the song
+    const int note = 48;
+    
+    //Darude Sandstorm in array form
+    float notes[note] = float[note](g, g, g, g, 
+                                    g, 0.0, g, g, 
+                                    g, g, g, g,
+                                    g, 0.0, c, c, 
+                                    c, c, c, c, 
+                                    c, 0.0, b, b,
+                                    b, b, b, b, 
+                                    b, 0.0, f, f, 
+                                    g, g, g, g, 
+                                    g, 0.0, g, g, 
+                                    g, g, g, g,
+                                    g, 0.0, c, c);
+    //Plays Darude Sandstorm
+    return vec2(playSound(notes[int(time * 10.) % note], time));
+}

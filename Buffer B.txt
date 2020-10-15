@@ -10,13 +10,15 @@
 
 void mainImage(out color4 fragColor, in sCoord fragCoord)
 {
-    // setup
-    // test UV for input image
+    //normailized coords with aspect to resolution
     sCoord uv = fragCoord / iChannelResolution[0].xy;
     
-    // TESTING
-    // set iChannel0 to 'Misc/Buffer A' and fetch sample
+    //get colors from buffer a
     color4 texturePoint = texture(iChannel0, uv);
+    
+    //get luminosity of texture
     float lum = getLum(texturePoint);
+    
+    //return color
     fragColor =vec4(vec3(texturePoint)*lum *lum *lum *lum, 1.0);
 }
