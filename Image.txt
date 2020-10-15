@@ -1,3 +1,35 @@
+//Author:             Andrew Hunt and Aiden Wright
+//
+//Class:              GPR-200-02
+//
+//Assignment:         Lab 6: Intro to Post-Processing & Composition
+//
+//Date Assigned:      10/8/2020
+//
+//Due Date:           10/15/2020
+//
+// 
+//
+//Description:
+//
+//Main program with convolution calls
+//
+// 
+//
+//Certification of Authenticity:
+//
+//I certify that this is entirely my own work, except where I have given fully-documented 
+//references to the work of others. I understand the definition and consequences of plagiarism 
+//and acknowledge that the assessor of this assignment may, for the purpose of assessing 
+//this assignment:
+//
+// -          Reproduce this assignment and provide a copy to another member of academic 
+//			  staff; and/or
+//
+// -          Communicate a copy of this assignment to a plagiarism checking service 
+//			  (which may then retain a copy of this assignment on its database for the purpose of future 
+//			  plagiarism checking)
+
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 //  -> IMAGE TAB (final)
 
@@ -19,7 +51,7 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     //fragColor = screen(iChannel0, iChannel1, uv);
     
     //multiply convolution algorithm 
-    //fragColor = multiply(iChannel0, iChannel1, uv);
+	//fragColor = multiply(iChannel0, iChannel1, uv);
     
     //get colors for next few algorithms
     vec4 color1 = texture(iChannel0, uv);
@@ -30,4 +62,8 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     
     //only for edge detection
     fragColor = color1;
+    
+    //for testinng
+    //fragColor = color2;
+    //fragColor = texture(iChannel2, uv);
 }
