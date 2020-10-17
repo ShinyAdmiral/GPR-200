@@ -1,0 +1,20 @@
+void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+    //get normalized coords
+    sCoord uv = fragCoord / iResolution.xy;
+    
+    // viewing plane (viewport) iinputs
+    const sBasis eyePosition     = sBasis(0.0);
+    const sScalar viewportHeight = 2.0,
+          		  focalLength	 = 1.5;
+    
+    //viewport info
+    sViewport vp;
+    sRay ray;
+	
+    //initialize viewport and ray
+    initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
+    initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
+    
+    //render
+    fragColor += calcColor(vp, ray);
+}
