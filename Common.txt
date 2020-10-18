@@ -147,7 +147,13 @@ void initRayPersp(out sRay ray,
 
     // ray direction relative to origin is based on viewing plane coordinate
     // w = 0 because it represents a direction; can ignore when using
-    ray.direction = asVector(viewport - eyePosition);
+    ray.direction = asVector(viewport - eyePosition);                        
+}
+
+vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
+    vec2 xy = fragCoord - size / 2.0;
+    float z = size.y / tan(radians(fieldOfView) / 2.0);
+    return normalize(vec3(xy, -z));
 }
 
 //------------------------------------------------------------
@@ -170,41 +176,40 @@ void initSphere (out sSphere obj, in vec3 center, in float radius){
     obj.radius = radius;
 }
 
+float sphereSDF(vec3 p, float r) {
+    return length(p) - r;
+}
+
 
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
 //------------------------------------------------------------
 
-// calcColor: calculate the color of current pixel
-//	  vp:  input viewport info
-//	  ray: input ray info
-color4 calcColor(in sViewport vp, in sRay ray){
-    sSphere obj; 
-    initSphere(obj, vec3(0.0, 0.0, -4.0), 0.5);
+struct FPointLight
+{
+ 	vec4 center;
+    vec3 color;
+    float intensity;
+};
+  
+void initPointLight(out FPointLight pLight, vec4 center, vec3 color, float intensity)
+{
+    pLight.center = center;
+    pLight.color = color;
+    pLight.intensity = intensity;    
+}
     
-    //calc point of a hitting ray
-    vec3 dp;
-    dp.xy = ray.direction.xy - obj.center.xy;
+
+sScalar diffuseIntensity(sBasis surfacePosition, sBasis surfaceNormal, sBasis lightPos, sScalar lightInten)
+{
+ 	sScalar kD; // diffuse coefficient
+    sScalar iL; // Attenuation    
+	sBasis L = normalize(lightPos - surfacePosition); // light position
     
-    //check if hitting surface
-    float lSq = lengthSq(dp.xy),
-          rSq = obj.radius * obj.radius;
-    if (lSq <= rSq){  
-        
-        //calc sphere
-        dp.z = rSq - lSq;
-        
-        //calc position and normalize it
-        vec3 position = obj.center.xyz + vec3(dp.x, dp.y, sqrt(dp.z));
-        vec3 N = (position - obj.center.xyz) / obj.radius;
-        
-        color3 color = N * 0.5 + 0.5;
-        
-        //return color
-        return vec4 (color , 1.0);
-    }
+    kD = dot(surfaceNormal, L); // check how aligned the light and normal are
+    kD = max(0., kD);
+	sScalar d = length(lightPos - surfacePosition);
     
-    // BACKGROUND
-	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
-	return vec4(mix(warm, cool, ray.direction.y), 1.0);
+    iL = 1. / (1. + (d / lightInten) + ( (d * d) / (lightInten * lightInten) ));   
+    return kD * iL;
 }
