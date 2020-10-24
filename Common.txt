@@ -33,34 +33,40 @@
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
 //    v: input 3D vector to be converted
-sPoint asPoint(in sBasis v){
+sPoint asPoint(in sBasis v)
+{
     return sPoint(v, 1.0);
 }
 
 // asVector: promote a 3D vector into a 4D vector 
 //	representing a vector through space (w=0)
 //    v: input 3D vector to be converted
-sVector asVector(in sBasis v){
+sVector asVector(in sBasis v)
+{
     return sVector(v, 0.0);
 }
 
 
 // lengthSq: calculate the squared length of a vector type
 //    x: input whose squared length to calculate
-sScalar lengthSq(sScalar x){
+sScalar lengthSq(sScalar x)
+{
     return (x * x);
     //return dot(x, x); // for consistency with others
 }
 
-sScalar lengthSq(sDCoord x){
+sScalar lengthSq(sDCoord x)
+{
     return dot(x, x);
 }
 
-sScalar lengthSq(sBasis x){
+sScalar lengthSq(sBasis x)
+{
     return dot(x, x);
 }
 
-sScalar lengthSq(sVector x){
+sScalar lengthSq(sVector x)
+{
     return dot(x, x);
 }
 
@@ -112,7 +118,8 @@ struct sViewport{
 //    resolution:     input resolution of screen (in pixels)
 void initViewport(out sViewport vp,
                   in sScalar viewportHeight, in sScalar focalLength,
-                  in sCoord fragCoord, in sDCoord resolution){
+                  in sCoord fragCoord, in sDCoord resolution)
+{
     vp.pixelCoord = fragCoord;
     vp.resolution = resolution;
     vp.resolutionInv = 1.0 / vp.resolution;
@@ -129,7 +136,8 @@ void initViewport(out sViewport vp,
 //------------------------------------------------------------
 
 // sRay: info about the ray shot from camera
-struct sRay{
+struct sRay
+{
     sPoint origin;		//origin point in scene
     
     sVector direction;	//direction vector in scene
@@ -140,7 +148,8 @@ struct sRay{
 //    eyePosition: position of viewer in scene
 //    viewport:    input viewing plane offset
 void initRayPersp(out sRay ray,
-             	  in sBasis eyePosition, in sBasis viewport){
+             	  in sBasis eyePosition, in sBasis viewport)
+{
     // ray origin relative to viewer is the origin
     // w = 1 because it represents a point; can ignore when using
     ray.origin = asPoint(eyePosition);
@@ -150,7 +159,8 @@ void initRayPersp(out sRay ray,
     ray.direction = asVector(viewport - eyePosition);                        
 }
 
-vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
+vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) 
+{
     vec2 xy = fragCoord - size / 2.0;
     float z = size.y / tan(radians(fieldOfView) / 2.0);
     return normalize(vec3(xy, -z));
@@ -170,20 +180,62 @@ struct sSphere{
 //    obj: 		    output sphere
 //    center: 		input position of sphere
 //    radius: 		input radius of sphere
-void initSphere (out sSphere obj, in vec3 center, in float radius){
+void initSphere (out sSphere obj, in vec3 center, in float radius)
+{
     // initialize sphere variables
 	obj.center = asPoint(center);
     obj.radius = radius;
 }
 
-float sphereSDF(vec3 p, float r) {
+float sphereSDF(vec3 p, float r) 
+{
     return length(p) - r;
+}
+
+float sdBox( vec3 p, vec3 b )
+{
+  vec3 q = abs(p) - b;
+  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+
+float intersectSDF(float distA, float distB) {
+    return max(distA, distB);
+}
+
+float unionSDF(float distA, float distB) {
+    return min(distA, distB);
+}
+
+float differenceSDF(float distA, float distB) {
+    return max(distA, -distB);
 }
 
 
 //------------------------------------------------------------
 // RENDERING FUNCTIONS
 //------------------------------------------------------------
+
+// rotateCamera: take in radians and rotate camera
+//    ray: 		    ray that we are manipulating
+//    rad: 			radial input on a 2D grid
+mat3 rotate(vec2 rad){
+    //grab trig of mouse input y
+    float cosNumY = cos(-rad.y + pi);
+    float sinNumY = sin(-rad.y + pi);
+    
+    //grab trig of mouse input x
+    float cosNumX = cos(-rad.x + pi);
+    float sinNumX = sin(-rad.x + pi);
+    
+    //get roptation matrix
+    mat3 rm = mat3(   cosNumX, sinNumX * sinNumY,    sinNumX * cosNumY,
+            	         	0, 	         cosNumY,         	  -sinNumY, 
+                     -sinNumX, cosNumX * sinNumY,    cosNumY * cosNumX);
+    
+    
+    //return rotation
+   	return rm;
+}
 
 struct FPointLight
 {
@@ -225,4 +277,42 @@ float phongReflectance(vec3 pos, vec3 norm, FPointLight pLight, vec3 rayOrigin)
     
    float iS = pow(kS, 16.);
    return iS;
+}
+
+// MATHS
+//https://www.brainvoyager.com/bv/doc/UsersGuide/CoordsAndTransforms/SpatialTransformationMatrices.html
+mat4 rotateY(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+
+    return mat4(
+        vec4(c, 0, s, 0),
+        vec4(0, 1, 0, 0),
+        vec4(-s, 0, c, 0),
+        vec4(0, 0, 0, 1)
+    );
+}
+
+mat4 rotateX(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+
+    return mat4(
+        vec4(1., 0, 0., 0),
+        vec4(0, c, s, 0),
+        vec4(0., -s, c, 0),
+        vec4(0, 0, 0, 1.)
+    );
+}
+
+mat4 rotateZ(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+
+    return mat4(
+        vec4(c, -s, 0., 0),
+        vec4(s, c, 0., 0),
+        vec4(0., 0, 1, 0),
+        vec4(0, 0, 0, 1.)
+    );
 }
