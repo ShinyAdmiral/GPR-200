@@ -81,9 +81,6 @@ float sdPlane(vec3 pos, vec3 normals, float h)
 
 float sdCone( in vec3 p, in vec2 c, float h )
 {
-  // c is the sin/cos of the angle, h is height
-  // Alternatively pass q instead of (c,h),
-  // which is the point at the base in 2D
   vec2 q = h*vec2(c.x/c.y,-1.0);
     
   vec2 w = vec2( length(p.xz), p.y );
