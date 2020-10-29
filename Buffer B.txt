@@ -1,31 +1,32 @@
+// Code by Rhys Sullivan and Andrew Hunt
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     //get inverse resolution
-    sCoord resInv 	= 1.0 / iResolution.xy;
+    vec2 resInv 	= 1.0 / iResolution.xy;
     
     //get normalized coords
-    sCoord uv 		= fragCoord * resInv;
+    vec2 uv 		= fragCoord * resInv;
     
     //gather reset input
     float reset = texture(iChannel1, uv).w;
     
     //get previous coords
-    sCoord current 	= texture(iChannel0, uv).xy * reset;
-    sCoord origin 	= texture(iChannel0, uv).zw * reset;
+    vec2 current 	= texture(iChannel0, uv).xy * reset;
+    vec2 origin 	= texture(iChannel0, uv).zw * reset;
     
     //track  input if mouse down
     if(iMouse.z >= 0.0)
     {
         //get current position of mouse
-    	sCoord click 	= iMouse.zw * resInv;
-        sCoord mouse 	= iMouse.xy * resInv; 
+    	vec2 click 	= iMouse.zw * resInv;
+        vec2 mouse 	= iMouse.xy * resInv; 
         
         //get position relative to the center
-        sCoord center 	= click + (click - sCoord(0.5, 0.5));
-        sCoord mouseRev = mouse + (mouse - sCoord(0.5, 0.5));
+        vec2 center 	= click + (click - vec2(0.5, 0.5));
+        vec2 mouseRev = mouse + (mouse - vec2(0.5, 0.5));
         
         //get final position relative to the origin
-        sCoord RadPos	= origin - (mouseRev - center);
+        vec2 RadPos	= origin - (mouseRev - center);
         
         //return new position
         fragColor 		= vec4(RadPos, origin);

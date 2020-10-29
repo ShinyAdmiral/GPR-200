@@ -1,3 +1,5 @@
+// Code by Rhys Sullivan and Andrew Hunt
+
 //SENSITIVITY---------------------------
 const float FORWARD_SENSITIVITY = 0.5;	//Forward Sensity
 const float XY_SENSITIVITY 		= 0.25; //
