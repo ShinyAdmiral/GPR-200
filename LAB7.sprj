@@ -16,9 +16,9 @@
 					<width>1</width>
 					<height>1</height>
 					<depth>1</depth>
-					<x>-0.551634848</x>
+					<x>0.00100000005</x>
 					<y>0.00100000005</y>
-					<z>0.00200000009</z>
+					<z>0.00406661257</z>
 					<topology>TriangleList</topology>
 				</item>
 			</items>
@@ -35,15 +35,16 @@
 	<objects />
 	<cameras />
 	<settings>
+		<entry type="property" name="GLSLsphere" item="pipe" />
 		<entry type="file" name="lab7" shader="vs" />
 		<entry type="file" name="lab7" shader="ps" />
 		<entry type="pinned" name="uProjMat" owner="lab7" />
 		<entry type="pinned" name="uViewProjMat" owner="lab7" />
 		<entry type="pinned" name="uViewMat" owner="lab7" />
 		<entry type="camera" fp="false">
-			<distance>6</distance>
-			<pitch>-83</pitch>
-			<yaw>264</yaw>
+			<distance>5</distance>
+			<pitch>9</pitch>
+			<yaw>9</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
