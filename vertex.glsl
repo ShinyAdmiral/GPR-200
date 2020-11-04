@@ -102,13 +102,18 @@ void main(){
 	
 	vec3 color = vec3(0.0);
 	
+	vec3 lightForNorm;
+	//lightForNorm = norm_camera;
+	lightForNorm = aNormal;
+	
+	
 	for (int i = 0; i < 3; i ++){
 	
 		//calc Light diffuse and normalize it
 	    vec3 l = normalize(lights[i].center.xyz - aPosition.xyz);
 			
 		//calculate the light diffuse coefficient 
-		float diffCo = max(0.0, dot(norm_camera, l));
+		float diffCo = max(0.0, dot(lightForNorm, l));
 		
 		//calc Attenuation
 		float d = distance(lights[i].center.xyz, aPosition.xyz);
@@ -121,8 +126,12 @@ void main(){
 	    float specularCo, specularIn;   
 	    
 	    vec3 L = normalize(lights[i].center.xyz - aPosition.xyz); // Light Vector
-	    vec3 V = normalize(pos_camera.xyz - aPosition.xyz); // View Vector
-	    vec3 R = reflect(L, norm_camera);
+	    
+	    //vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
+	    //vec3 R = reflect(L, lightForNorm);
+	    
+	    vec3 V = aPosition.xyz; // View Vector
+	    vec3 R = reflect(-L, lightForNorm);
 	    
 	    specularCo = max(0.0, dot(V, R));
 	            
@@ -132,13 +141,12 @@ void main(){
 	    specularIn *= specularIn; //^8
 	    specularIn *= specularIn; //^16
 	    specularIn *= specularIn; //^32
-
-	 
 		
 		color += vec3(diffCo * attenIn * lights[i].color + specularIn);
 	}
 	
 	vColor = vec4(color,1.0);
+	vNormal = vec4(aNormal, 1.0);
 	
 	//Optional: set varyings
 	//vColor = vec4 (1.0, 0.5, 0.0, 1.0);
