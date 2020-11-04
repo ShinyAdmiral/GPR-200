@@ -16,9 +16,9 @@
 					<width>1</width>
 					<height>1</height>
 					<depth>1</depth>
-					<x>-0.0130000003</x>
-					<y>-0.75506568</y>
-					<z>-0.246000007</z>
+					<x>-0.551634848</x>
+					<y>0.00100000005</y>
+					<z>0.00200000009</z>
 					<topology>TriangleList</topology>
 				</item>
 			</items>
@@ -41,9 +41,9 @@
 		<entry type="pinned" name="uViewProjMat" owner="lab7" />
 		<entry type="pinned" name="uViewMat" owner="lab7" />
 		<entry type="camera" fp="false">
-			<distance>8</distance>
-			<pitch>-46</pitch>
-			<yaw>156</yaw>
+			<distance>6</distance>
+			<pitch>-83</pitch>
+			<yaw>264</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

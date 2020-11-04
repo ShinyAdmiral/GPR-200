@@ -38,25 +38,6 @@ void main(){
 	vec4 N = normalize (vNormal);
 	vec4 normalColors = vec4(0.0, 0.0, 0.0, 1.0);//vec4(N.xyz * 0.5 + 0.5, 1.0);
 	
-	/*for (int i = 3; i < 3; i ++){
-		//calculate light
-       	float diffCo, attenIn, d, diffIn;
-       	
-       	
-		//calc Light diffuse and normalize it
-        vec3 l = lights[i].center.xyz - dp;
-        float lLen = length(l);
-        vec3 L = vec3(l.x/lLen, l.y/lLen, l.z/lLen);
-		
-		//calculate the light diffuse coefficient 
-		diffCo = max(0.0, dot(N, L));
-		
-		
-		d = distance()
-			
-	}
-	*/
-	
 	rtFragColor = vColor;//vec4(N.xyz * 0.5 + 0.5, 1.0);
 	
 	//rtFragColor = vec4(vTexcoord, 0.0, 1.0);
