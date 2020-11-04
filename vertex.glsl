@@ -34,13 +34,19 @@ struct pointLight {
 out vec4 vColor;
 
 //PER-FRAGMENT: send stuff to the FS to calc final color
+out vec4 vPosition; 
+
 out vec4 vNormal; 
+
+out vec4 vCamPos; 
 
 out vec4 vTexcoord;
 
 out pointLight[3] lights;
 
 void main(){
+	//vPosition = aPosition;
+	
 	// REQUIRED: set this value:
 	// problem: gl_positionin in "clip-sapce"
 	// problem: aPositin is in "object-space"
@@ -48,6 +54,7 @@ void main(){
 	
 	//position in world-space (wrong)
 	vec4 pos_world = uModelMat * aPosition;
+	vPosition = pos_world;
 	
 	//gl_Position = pos_world;
 	
@@ -65,8 +72,9 @@ void main(){
 	// POSITION PIPELINE
 	mat4 modelViewMat = uViewMat * uModelMat;
 	vec4 pos_camera = modelViewMat * aPosition;
+	vCamPos = pos_camera;
 	vec4 pos_clip = uProjMat * pos_camera;
-				
+	
 	// NORMAL PIPELINE
 	mat3 normalMat = transpose(inverse(mat3(modelViewMat)));
 	vec3 norm_camera = normalMat * aNormal;															
@@ -100,11 +108,13 @@ void main(){
 	lights[2].color 	= vec4(1.0, 0.0, 1.0, 1.0);
 	lights[2].intensity = 3.0;
 	
+	/*
 	vec3 color = vec3(0.0);
 	
+	
 	vec3 lightForNorm;
-	//lightForNorm = norm_camera;
-	lightForNorm = aNormal;
+	lightForNorm = norm_camera;
+	//lightForNorm = aNormal;
 	
 	
 	for (int i = 0; i < 3; i ++){
@@ -120,18 +130,16 @@ void main(){
 		
 		float attenIn = 1.0/(1.0 + d / lights[i].intensity + (d * d)/ (lights[i].intensity * lights[i].intensity));
 		
-		vColor = vec4(diffCo * attenIn);
-		
 		//calculate phong reflectance
 	    float specularCo, specularIn;   
 	    
 	    vec3 L = normalize(lights[i].center.xyz - aPosition.xyz); // Light Vector
 	    
-	    //vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
-	    //vec3 R = reflect(L, lightForNorm);
+	    vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
+	    vec3 R = reflect(L, lightForNorm);
 	    
-	    vec3 V = aPosition.xyz; // View Vector
-	    vec3 R = reflect(-L, lightForNorm);
+	    //vec3 V = aPosition.xyz; // View Vector
+	    //vec3 R = reflect(-L, lightForNorm);
 	    
 	    specularCo = max(0.0, dot(V, R));
 	            
@@ -147,6 +155,7 @@ void main(){
 	
 	vColor = vec4(color,1.0);
 	vNormal = vec4(aNormal, 1.0);
+	*/
 	
 	//Optional: set varyings
 	//vColor = vec4 (1.0, 0.5, 0.0, 1.0);

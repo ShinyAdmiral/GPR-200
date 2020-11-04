@@ -54,7 +54,7 @@ void main(){
 	
 	//position in world-space (wrong)
 	vec4 pos_world = uModelMat * aPosition;
-	//vPosition = pos_world;
+	vPosition = pos_world;
 	
 	//gl_Position = pos_world;
 	
@@ -74,7 +74,6 @@ void main(){
 	vec4 pos_camera = modelViewMat * aPosition;
 	vCamPos = pos_camera;
 	vec4 pos_clip = uProjMat * pos_camera;
-	vPosition = pos_clip;
 	
 	// NORMAL PIPELINE
 	mat3 normalMat = transpose(inverse(mat3(modelViewMat)));
@@ -114,8 +113,8 @@ void main(){
 	
 	
 	vec3 lightForNorm;
-	//lightForNorm = norm_camera;
-	lightForNorm = aNormal;
+	lightForNorm = norm_camera;
+	//lightForNorm = aNormal;
 	
 	
 	for (int i = 0; i < 3; i ++){
@@ -136,11 +135,11 @@ void main(){
 	    
 	    vec3 L = normalize(lights[i].center.xyz - aPosition.xyz); // Light Vector
 	    
-	    //vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
-	    //vec3 R = reflect(L, lightForNorm);
+	    vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
+	    vec3 R = reflect(L, lightForNorm);
 	    
-	    vec3 V = aPosition.xyz; // View Vector
-	    vec3 R = reflect(-L, lightForNorm);
+	    //vec3 V = aPosition.xyz; // View Vector
+	    //vec3 R = reflect(-L, lightForNorm);
 	    
 	    specularCo = max(0.0, dot(V, R));
 	            

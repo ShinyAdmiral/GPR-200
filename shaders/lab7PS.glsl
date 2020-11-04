@@ -79,11 +79,13 @@ void main(){
 	    specularIn *= specularIn; //^4
 	    specularIn *= specularIn; //^8
 	    specularIn *= specularIn; //^16
+	    
 		
 		color += vec3(diffCo * attenIn * lights[i].color + specularIn);
 	}
 	
 	rtFragColor = vec4(color,1.0);
+	//rtFragColor = N;
 	
 	//PER-VERTEX: Input is just final color
 	//rtFragColor = vColor;
