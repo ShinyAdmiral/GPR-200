@@ -41,8 +41,8 @@
 		<entry type="pinned" name="uViewMat" owner="lab7" />
 		<entry type="camera" fp="false">
 			<distance>4</distance>
-			<pitch>-28</pitch>
-			<yaw>187</yaw>
+			<pitch>89</pitch>
+			<yaw>170</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

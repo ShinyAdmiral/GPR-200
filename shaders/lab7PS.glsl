@@ -79,9 +79,9 @@ void main(){
 	    specularIn *= specularIn; //^4
 	    specularIn *= specularIn; //^8
 	    specularIn *= specularIn; //^16
-	    
 		
 		color += vec3(diffCo * attenIn * lights[i].color + specularIn);
+		//color += vec3(specularIn);
 	}
 	
 	rtFragColor = vec4(color,1.0);

@@ -108,9 +108,9 @@ void main(){
 	lights[2].color 	= vec4(1.0, 0.0, 1.0, 1.0);
 	lights[2].intensity = 3.0;
 	
-	/*
-	vec3 color = vec3(0.0);
 	
+	vec3 color = vec3(0.0);
+	/*
 	
 	vec3 lightForNorm;
 	lightForNorm = norm_camera;
@@ -136,7 +136,7 @@ void main(){
 	    vec3 L = normalize(lights[i].center.xyz - aPosition.xyz); // Light Vector
 	    
 	    vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
-	    vec3 R = reflect(L, lightForNorm);
+	   	vec3 R = reflect(L, lightForNorm);
 	    
 	    //vec3 V = aPosition.xyz; // View Vector
 	    //vec3 R = reflect(-L, lightForNorm);
