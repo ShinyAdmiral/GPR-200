@@ -50,8 +50,8 @@
 		<entry type="pinned" name="uViewProjMat" owner="lab7" />
 		<entry type="pinned" name="uViewMat" owner="lab7" />
 		<entry type="camera" fp="false">
-			<distance>4</distance>
-			<pitch>5</pitch>
+			<distance>5</distance>
+			<pitch>2</pitch>
 			<yaw>127</yaw>
 			<roll>360</roll>
 		</entry>
