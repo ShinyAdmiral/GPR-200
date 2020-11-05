@@ -8,6 +8,9 @@ layout (location = 0) out vec4 rtFragColor;
 //out vec4 rtFragColor;
 
 
+//Uniforms
+uniform sampler2D uTextureMap;
+
 //DATA STRUCTURES
 //data structure for light
 struct pointLight {
@@ -66,11 +69,11 @@ void main(){
 	    
 	    vec3 L = normalize(lights[i].center.xyz - vPosition.xyz); // Light Vector
 	    
-	    vec3 V = normalize(vCamPos.xyz - vPosition.xyz);//aPosition.xyz; // View Vector
-	    vec3 R = reflect(L, vNormal.xyz);
+	    //vec3 V = normalize(vCamPos.xyz - vPosition.xyz);//aPosition.xyz; // View Vector
+	    //vec3 R = reflect(L, vNormal.xyz);
 	    
-	    //vec3 V = vPosition.xyz; // View Vector
-	    //vec3 R = reflect(-L, vNormal.xyz);
+	    vec3 V = vPosition.xyz; // View Vector
+	    vec3 R = reflect(-L, vNormal.xyz);
 	    
 	    specularCo = max(0.0, dot(V, R));
 	            
@@ -84,7 +87,7 @@ void main(){
 		//color += vec3(specularIn);
 	}
 	
-	rtFragColor = vec4(color,1.0);
+	rtFragColor = vec4(color,1.0) * texture(uTextureMap, vec2(1., -1.) * vTexcoord.xy);
 	//rtFragColor = N;
 	
 	//PER-VERTEX: Input is just final color

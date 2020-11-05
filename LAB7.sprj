@@ -16,7 +16,7 @@
 					<width>1</width>
 					<height>1</height>
 					<depth>1</depth>
-					<x>0.00499999989</x>
+					<x>-0.0427600145</x>
 					<y>0.00100000005</y>
 					<z>0.00100000005</z>
 					<topology>TriangleList</topology>
@@ -28,11 +28,21 @@
 				<variable type="float4x4" name="uViewMat" system="View" />
 				<variable type="float4x4" name="uProjMat" system="Projection" />
 				<variable type="float4x4" name="uViewProjMat" system="ViewProjection" />
+				<variable type="int" name="uTextureMap">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
+				<variable type="float" name="iTime" system="Time" />
 			</variables>
 			<macros />
 		</pass>
 	</pipeline>
-	<objects />
+	<objects>
+		<object type="texture" path="8081_earthmap10k.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="0" name="lab7" />
+		</object>
+	</objects>
 	<cameras />
 	<settings>
 		<entry type="file" name="lab7" shader="vs" />
@@ -41,8 +51,8 @@
 		<entry type="pinned" name="uViewMat" owner="lab7" />
 		<entry type="camera" fp="false">
 			<distance>4</distance>
-			<pitch>89</pitch>
-			<yaw>170</yaw>
+			<pitch>5</pitch>
+			<yaw>127</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

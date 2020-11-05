@@ -18,6 +18,8 @@ uniform mat4 uModelMat;
 uniform mat4 uViewMat;
 uniform mat4 uProjMat;
 uniform mat4 uViewProjMat;
+uniform sampler2D uTextureMap;
+uniform float iTime;
 
 //DATA STRUCTURES
 //data structure for light
@@ -97,24 +99,24 @@ void main(){
 	// CALC LIGHT
 	// --------------------------------------------------------
 	lights[0].center 	= pos_world + vec4(0.0, 1.0, 0.5, 1.0);
-	lights[0].color 	= vec4(0.0, 1.0, 1.0, 1.0);
+	lights[0].color 	= vec4(1.0);
 	lights[0].intensity = 7.0;
 	
 	lights[1].center 	= pos_world + vec4(-0.5, -1.0, 1.0, 1.0);
-	lights[1].color 	= vec4(0.0, 1.0, 0.0, 1.0);
+	lights[1].color 	= vec4(1.0);
 	lights[1].intensity = 4.0;
 	
 	lights[2].center 	= pos_world + vec4(1.0, -1.0, 0.0, 1.0);
-	lights[2].color 	= vec4(1.0, 0.0, 1.0, 1.0);
+	lights[2].color 	= vec4(1.0);
 	lights[2].intensity = 3.0;
 	
 	
 	vec3 color = vec3(0.0);
-	/*
+	
 	
 	vec3 lightForNorm;
-	lightForNorm = norm_camera;
-	//lightForNorm = aNormal;
+	//lightForNorm = norm_camera;
+	lightForNorm = aNormal;
 	
 	
 	for (int i = 0; i < 3; i ++){
@@ -135,11 +137,11 @@ void main(){
 	    
 	    vec3 L = normalize(lights[i].center.xyz - aPosition.xyz); // Light Vector
 	    
-	    vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
-	   	vec3 R = reflect(L, lightForNorm);
+	    //vec3 V = normalize(pos_camera.xyz - aPosition.xyz);//aPosition.xyz; // View Vector
+	   	//vec3 R = reflect(L, lightForNorm);
 	    
-	    //vec3 V = aPosition.xyz; // View Vector
-	    //vec3 R = reflect(-L, lightForNorm);
+	    vec3 V = aPosition.xyz; // View Vector
+	    vec3 R = reflect(-L, lightForNorm);
 	    
 	    specularCo = max(0.0, dot(V, R));
 	            
@@ -152,16 +154,33 @@ void main(){
 		
 		color += vec3(diffCo * attenIn * lights[i].color + specularIn);
 	}
+	//	vec4 uv_atlas = atlasMat * aTexcoord * texture(uTextureMap);
 	
-	vColor = vec4(color,1.0);
+	vColor = vec4(color,1.0) * texture(uTextureMap, aTexcoord.xy);
 	vNormal = vec4(aNormal, 1.0);
-	*/
+	
 	
 	//Optional: set varyings
 	//vColor = vec4 (1.0, 0.5, 0.0, 1.0);
 	//vColor = aPosition * 0.5 + 0.5;
 	
 	vTexcoord = aTexcoord;
+	
+	/*
+	//Credit: http://web.engr.oregonstate.edu/~mjb/cs557/Handouts/morph.1pp.pdf
+	
+	//get side count in relation to time
+	const float SIDE = sin(iTime) * 0.5 + 2.0;
+	
+	//start with object in clip space
+	vec4 vertex = pos_clip;
+	
+	//box it 
+	vertex.xyz *= 4. / length(vertex.xyz);
+	vertex.xyz = clamp( vertex.xyz, -SIDE, SIDE );
+	
+	gl_Position = vertex;//pos_clip * mod(iTime, 10.0);
+	*/
 	
 	gl_Position = pos_clip;
 }
