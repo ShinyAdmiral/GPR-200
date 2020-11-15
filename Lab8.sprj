@@ -1,9 +1,65 @@
 <?xml version="1.0"?>
 <project version="2">
 	<pipeline>
-		<pass name="Lab8" type="shader" active="true">
-			<shader type="vs" path="shaders\Lab8VS.glsl" entry="main" />
-			<shader type="ps" path="shaders\Lab8PS.glsl" entry="main" />
+		<pass name="Scene" type="shader" active="true">
+			<shader type="vs" path="shaders\SceneVS.glsl" entry="main" />
+			<shader type="ps" path="shaders\ScenePS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture name="rtScene" />
+			<items>
+				<item name="sCube" type="geometry">
+					<type>Cube</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<x>-1.67734504</x>
+					<z>-0.230083466</z>
+					<topology>TriangleList</topology>
+				</item>
+				<item name="sCube2" type="geometry">
+					<type>Cube</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<x>0.639006615</x>
+					<y>-2.32917571</y>
+					<topology>TriangleList</topology>
+				</item>
+				<item name="sSphere" type="geometry">
+					<type>Sphere</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<x>-1.95711803</x>
+					<y>-0.39050889</y>
+					<z>2.0170784</z>
+					<topology>TriangleList</topology>
+				</item>
+				<item name="sSphere2" type="geometry">
+					<type>Sphere</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<x>-0.256926775</x>
+					<z>-1.38692093</z>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="uProjMat" system="Projection" />
+				<variable type="float4x4" name="uViewMat" system="View" />
+				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
+			</variables>
+			<macros />
+		</pass>
+		<pass name="FSQ" type="shader" active="true">
+			<shader type="vs" path="shaders\FSQVS.glsl" entry="main" />
+			<shader type="ps" path="shaders\FSQPS.glsl" entry="main" />
 			<inputlayout>
 				<item value="Position" semantic="POSITION" />
 				<item value="Normal" semantic="NORMAL" />
@@ -11,23 +67,18 @@
 			</inputlayout>
 			<rendertexture />
 			<items>
-				<item name="vSphere" type="geometry">
-					<type>Sphere</type>
+				<item name="sFSQ" type="geometry">
+					<type>ScreenQuadNDC</type>
 					<width>1</width>
 					<height>1</height>
 					<depth>1</depth>
-					<x>0.199402779</x>
-					<y>-0.196990013</y>
-					<z>0.383534968</z>
 					<topology>TriangleList</topology>
 				</item>
 			</items>
 			<itemvalues />
 			<variables>
 				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
-				<variable type="float4x4" name="uViewMat" system="View" />
-				<variable type="float4x4" name="uProjMat" system="Projection" />
-				<variable type="float4x4" name="uOrthMat">
+				<variable type="float4x4" name="uViewMat">
 					<row>
 						<value>0</value>
 						<value>0</value>
@@ -53,23 +104,64 @@
 						<value>0</value>
 					</row>
 				</variable>
+				<variable type="float4x4" name="uProjMat">
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+				</variable>
+				<variable type="float2" name="uResolution" system="ViewportSize" />
+				<variable type="int" name="uTex">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
 	</pipeline>
-	<objects />
+	<objects>
+		<object type="rendertexture" name="rtScene" fsize="661,773" clear="true">
+			<bind slot="1" name="Scene" />
+			<bind slot="0" name="FSQ" />
+		</object>
+		<object type="texture" path="..\..\..\Games\Repositories\sp\Build\Sniper Punk\sprites\image0\96b36a92-141a-4bab-8dd0-686b2521c1d9.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="0" name="Scene" />
+			<bind slot="1" name="FSQ" />
+		</object>
+	</objects>
 	<cameras />
 	<settings>
-		<entry type="property" name="vSphere" item="pipe" />
-		<entry type="file" name="Lab8" shader="vs" />
-		<entry type="file" name="Lab8" shader="ps" />
-		<entry type="pinned" name="uViewMat" owner="Lab8" />
-		<entry type="pinned" name="uProjMat" owner="Lab8" />
-		<entry type="pinned" name="uOrthMat" owner="Lab8" />
+		<entry type="file" name="Scene" shader="vs" />
+		<entry type="file" name="Scene" shader="ps" />
+		<entry type="file" name="FSQ" shader="ps" />
+		<entry type="file" name="FSQ" shader="vs" />
+		<entry type="pinned" name="uViewMat" owner="FSQ" />
+		<entry type="pinned" name="uProjMat" owner="FSQ" />
 		<entry type="camera" fp="false">
 			<distance>8</distance>
-			<pitch>-26</pitch>
-			<yaw>95</yaw>
+			<pitch>6</pitch>
+			<yaw>239</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
