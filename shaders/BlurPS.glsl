@@ -48,6 +48,6 @@ void main()
 	vec2 invRes = 1.0 / vec2(float(res.x), float(res.y));
 	
 	vec4 col = guassianBlur(uTex, uv, invRes);
-	//col = texture(uTex, uv);
+	col = texture(uTex, uv);
 	rtFragColor = col;
 }

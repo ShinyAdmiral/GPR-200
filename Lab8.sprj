@@ -165,6 +165,11 @@
 						<value>0</value>
 					</row>
 				</variable>
+				<variable type="int" name="uTex">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -178,7 +183,9 @@
 			<bind slot="0" name="Scene" />
 			<bind slot="1" name="FSQ" />
 		</object>
-		<object type="rendertexture" name="rtFSQ" fsize="647,773" clear="true" />
+		<object type="rendertexture" name="rtFSQ" fsize="647,773" clear="true">
+			<bind slot="0" name="Blur" />
+		</object>
 	</objects>
 	<cameras />
 	<settings>
@@ -192,9 +199,9 @@
 		<entry type="pinned" name="uViewMat" owner="Blur" />
 		<entry type="pinned" name="uProjMat" owner="Blur" />
 		<entry type="camera" fp="false">
-			<distance>10</distance>
-			<pitch>37</pitch>
-			<yaw>240</yaw>
+			<distance>12</distance>
+			<pitch>19</pitch>
+			<yaw>263</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
