@@ -17,6 +17,7 @@
 					<height>1</height>
 					<depth>1</depth>
 					<x>-1.67734504</x>
+					<y>-1.70401502</y>
 					<z>-0.230083466</z>
 					<topology>TriangleList</topology>
 				</item>
@@ -54,6 +55,7 @@
 				<variable type="float4x4" name="uProjMat" system="Projection" />
 				<variable type="float4x4" name="uViewMat" system="View" />
 				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
+				<variable type="int" name="uTextureMap" system="FrameIndex" />
 			</variables>
 			<macros />
 		</pass>
@@ -65,7 +67,7 @@
 				<item value="Normal" semantic="NORMAL" />
 				<item value="Texcoord" semantic="TEXCOORD0" />
 			</inputlayout>
-			<rendertexture />
+			<rendertexture name="rtFSQ" />
 			<items>
 				<item name="sFSQ" type="geometry">
 					<type>ScreenQuadNDC</type>
@@ -77,6 +79,39 @@
 			</items>
 			<itemvalues />
 			<variables>
+				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
+				<variable type="float4x4" name="uViewMat" system="View" />
+				<variable type="float4x4" name="uProjMat" system="ViewProjection" />
+				<variable type="float2" name="uResolution" system="ViewportSize" />
+				<variable type="int" name="uTex">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
+			</variables>
+			<macros />
+		</pass>
+		<pass name="Blur" type="shader" active="true">
+			<shader type="vs" path="shaders\BlurVS.glsl" entry="main" />
+			<shader type="ps" path="shaders\BlurPS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="sBlur" type="geometry">
+					<type>ScreenQuadNDC</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float2" name="uResolution" system="ViewportSize" />
 				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
 				<variable type="float4x4" name="uViewMat">
 					<row>
@@ -130,12 +165,6 @@
 						<value>0</value>
 					</row>
 				</variable>
-				<variable type="float2" name="uResolution" system="ViewportSize" />
-				<variable type="int" name="uTex">
-					<row>
-						<value>0</value>
-					</row>
-				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -145,23 +174,27 @@
 			<bind slot="1" name="Scene" />
 			<bind slot="0" name="FSQ" />
 		</object>
-		<object type="texture" path="..\..\..\Games\Repositories\sp\Build\Sniper Punk\sprites\image0\96b36a92-141a-4bab-8dd0-686b2521c1d9.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+		<object type="texture" path="rocky-mountain-texture-seamless.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="0" name="Scene" />
 			<bind slot="1" name="FSQ" />
 		</object>
+		<object type="rendertexture" name="rtFSQ" fsize="647,773" clear="true" />
 	</objects>
 	<cameras />
 	<settings>
+		<entry type="property" name="sBlur" item="pipe" />
 		<entry type="file" name="Scene" shader="vs" />
 		<entry type="file" name="Scene" shader="ps" />
 		<entry type="file" name="FSQ" shader="ps" />
 		<entry type="file" name="FSQ" shader="vs" />
-		<entry type="pinned" name="uViewMat" owner="FSQ" />
-		<entry type="pinned" name="uProjMat" owner="FSQ" />
+		<entry type="file" name="Blur" shader="vs" />
+		<entry type="file" name="Blur" shader="ps" />
+		<entry type="pinned" name="uViewMat" owner="Blur" />
+		<entry type="pinned" name="uProjMat" owner="Blur" />
 		<entry type="camera" fp="false">
-			<distance>8</distance>
-			<pitch>6</pitch>
-			<yaw>239</yaw>
+			<distance>10</distance>
+			<pitch>37</pitch>
+			<yaw>240</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
