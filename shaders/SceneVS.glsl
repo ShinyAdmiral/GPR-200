@@ -16,7 +16,7 @@ out vec4 vCamPos;
 void main(){    
     //Clip
     //PERSPECTIVE
-    vPosition = aPosition;
+    vPosition = uModelMat * aPosition;
     
     vCamPos = uViewMat * uModelMat * aPosition;
     
@@ -24,10 +24,10 @@ void main(){
     
     // NORMAL PIPELINE
 	//mat3 normalMat = transpose(inverse(mat3(uViewMat * uModelMat)));
-	//vNormal = normalMat * aNormal;															
+	vNormal = (uModelMat * vec4(aNormal,0)).xyz;															
 	
     //vPosClip = gl_Position;
     
     vTexcoord = aTexcoord;
-    vNormal = aNormal;
+    //vNormal = aNormal;
 }

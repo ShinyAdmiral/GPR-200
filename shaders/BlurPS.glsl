@@ -2,7 +2,7 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
-in vec2 vTexcoord;
+in vec4 gl_FragCoord;
 
 //uniform vec2 uResolution;
 uniform sampler2D uTex;
@@ -43,11 +43,7 @@ vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res)
 }
 void main()
 {
-	vec2 uv = vTexcoord;
-	ivec2 res = textureSize(uTex, 0);
-	vec2 invRes = 1.0 / vec2(float(res.x), float(res.y));
-	
-	vec4 col = guassianBlur(uTex, uv, invRes);
-	col = texture(uTex, uv);
+	vec2 invRes = 1.0 / uResolution;
+	vec4 col = guassianBlur(uTex, gl_FragCoord.xy, invRes);
 	rtFragColor = col;
 }

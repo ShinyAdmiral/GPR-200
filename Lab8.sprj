@@ -175,7 +175,7 @@
 		</pass>
 	</pipeline>
 	<objects>
-		<object type="rendertexture" name="rtScene" fsize="661,773" clear="true">
+		<object type="rendertexture" name="rtScene" fsize="662,773" clear="true">
 			<bind slot="1" name="Scene" />
 			<bind slot="0" name="FSQ" />
 		</object>
@@ -189,19 +189,18 @@
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="property" name="sBlur" item="pipe" />
+		<entry type="file" name="FSQ" shader="vs" />
+		<entry type="file" name="FSQ" shader="ps" />
 		<entry type="file" name="Scene" shader="vs" />
 		<entry type="file" name="Scene" shader="ps" />
-		<entry type="file" name="FSQ" shader="ps" />
-		<entry type="file" name="FSQ" shader="vs" />
 		<entry type="file" name="Blur" shader="vs" />
 		<entry type="file" name="Blur" shader="ps" />
 		<entry type="pinned" name="uViewMat" owner="Blur" />
 		<entry type="pinned" name="uProjMat" owner="Blur" />
 		<entry type="camera" fp="false">
-			<distance>12</distance>
-			<pitch>19</pitch>
-			<yaw>263</yaw>
+			<distance>13</distance>
+			<pitch>-2</pitch>
+			<yaw>176</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

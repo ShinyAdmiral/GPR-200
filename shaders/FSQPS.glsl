@@ -16,5 +16,5 @@ void main()
 	vec2 uv = vTexcoord;
 	float lum = getLum(texture(uTex, uv));
 	vec4 col = vec4(vec3(texture(uTex, uv)) * lum * lum * lum, 1.0);
-	rtFragColor = col;
+	rtFragColor = col;//texture(uTex, uv);
 }
