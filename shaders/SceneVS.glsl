@@ -6,12 +6,24 @@ layout (location = 2) in vec4 aTexcoord;
 
 uniform mat4 uModelMat, uViewMat, uProjMat;
 
+//------------------------------------------
+//DATA STRUCTURES
+//------------------------------------------
+
+//data structure for light
+struct pointLight {
+	vec4 center; 	 // center point of light
+    vec4 color;		 // color of light
+    float intensity; // intensity of light
+};
+
 //varraying
 //out vec4 vPosClip;
 out vec3 vNormal;
 out vec4 vTexcoord;
 out vec4 vPosition;
 out vec4 vCamPos;
+out pointLight light[3];
 
 void main(){    
     //Clip
@@ -29,5 +41,16 @@ void main(){
     //vPosClip = gl_Position;
     
     vTexcoord = aTexcoord;
-    //vNormal = aNormal;
+	
+	light[0].center = uModelMat * vec4(10.0, 10.0, 0.0, 1.0);
+	light[0].color = vec4(1.0, 1.0, 0.0, 1.0);
+	light[0].intensity = 100000.0;
+	
+	light[1].center = uModelMat * vec4(-10.0, -10.0, 10.0, 1.0);
+	light[1].color = vec4(1.0, 0.0, 1.0, 1.0);
+	light[1].intensity = 1000.0;
+	
+	light[2].center = uModelMat * vec4(-10.0, 10.0, -10.0, 1.0);
+	light[2].color = vec4(1.0);
+	light[2].intensity = 1000.0;
 }

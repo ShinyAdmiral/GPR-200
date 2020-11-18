@@ -1,8 +1,7 @@
 #version 450
 
 layout (location = 0) out vec4 rtFragColor;
-
-in vec4 gl_FragCoord;
+layout (location = 1) in vec4 gl_FragCoord;
 
 //uniform vec2 uResolution;
 uniform sampler2D uTex;

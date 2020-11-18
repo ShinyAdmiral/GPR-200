@@ -1,16 +1,20 @@
 #version 450
 
-layout (location = 0) in vec4 aPosition;
-layout (location = 2) in vec2 aTexcoord;
+layout (location = 0) out vec4 rtFragColor;
 
-uniform mat4 uModelMat, uViewMat, uProjMat;
-uniform vec2 uResolution;
+in vec2 vTexcoord;
 
-void main(){    
-    //Clip
-    //PERSPECTIVE
-    
-    vec2 scale = 1.0 / uResolution;
-    
-    gl_Position = aPosition;// * vec4(scale.x, scale.y, 1.0, 1.);
+//uniform vec2 uResolution;
+uniform sampler2D uTex;
+float getLum(in vec4 color)
+{
+    //return luiminosity
+    return 0.2126 * color.x + 0.7152 * color.y + 0.0722 * color.z;
+}
+void main()
+{
+	vec2 uv = vTexcoord;
+	float lum = getLum(texture(uTex, uv));
+	vec4 col = vec4(vec3(texture(uTex, uv)) * lum * lum * lum, 1.0);
+	rtFragColor = col;//texture(uTex, uv);
 }
