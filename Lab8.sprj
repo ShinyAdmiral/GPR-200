@@ -55,6 +55,11 @@
 				<variable type="float4x4" name="uViewMat" system="View" />
 				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
 				<variable type="int" name="uTextureMap" system="FrameIndex" />
+				<variable type="int" name="uKeyboard">
+					<row>
+						<value>1</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -283,47 +288,57 @@
 						<value>1</value>
 					</row>
 				</variable>
+				<variable type="int" name="uKeyboard">
+					<row>
+						<value>2</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
 	</pipeline>
 	<objects>
-		<object type="rendertexture" name="rtScene" fsize="662,773" clear="true">
+		<object type="rendertexture" name="rtScene" rsize="1.000000,1.000000" clear="true">
 			<bind slot="0" name="FSQ" />
 		</object>
 		<object type="texture" path="sky2.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="0" name="Scene" />
 			<bind slot="1" name="FSQ" />
 		</object>
-		<object type="rendertexture" name="rtFSQ" fsize="647,773" clear="true">
+		<object type="rendertexture" name="rtFSQ" rsize="1.000000,1.000000" clear="true">
 			<bind slot="0" name="Luminosity" />
 			<bind slot="0" name="Display" />
 		</object>
-		<object type="rendertexture" name="rtBlur" fsize="719,773" clear="true">
+		<object type="rendertexture" name="rtBlur" rsize="1.000000,1.000000" clear="true">
 			<bind slot="1" name="Display" />
 		</object>
-		<object type="rendertexture" name="rtLuminosity" fsize="628,634" clear="true">
+		<object type="rendertexture" name="rtLuminosity" rsize="1.000000,1.000000" clear="true">
 			<bind slot="0" name="Blur" />
+		</object>
+		<object type="texture" name="keyboard" keyboard_texture="true">
+			<bind slot="1" name="Scene" />
+			<bind slot="2" name="Display" />
 		</object>
 	</objects>
 	<cameras />
 	<settings>
+		<entry type="property" name="Blur" item="pipe" />
 		<entry type="file" name="Luminosity" shader="ps" />
 		<entry type="file" name="FSQ" shader="vs" />
 		<entry type="file" name="FSQ" shader="ps" />
 		<entry type="file" name="Scene" shader="vs" />
 		<entry type="file" name="Scene" shader="ps" />
 		<entry type="file" name="Blur" shader="vs" />
-		<entry type="file" name="Blur" shader="ps" />
 		<entry type="file" name="Display" shader="vs" />
 		<entry type="file" name="Display" shader="ps" />
 		<entry type="file" name="Luminosity" shader="vs" />
+		<entry type="file" name="Blur" shader="ps" />
 		<entry type="pinned" name="uViewMat" owner="Luminosity" />
 		<entry type="pinned" name="uProjMat" owner="Luminosity" />
 		<entry type="camera" fp="false">
 			<distance>9</distance>
-			<pitch>18</pitch>
-			<yaw>70</yaw>
+			<pitch>13</pitch>
+			<yaw>45</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

@@ -33,6 +33,7 @@ struct pointLight {
 // FUNCTIONS
 //------------------------------------------
 
+//Sources Used: GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 // calcViewport:   calculate the viewing plane (viewport) coordinate
 //    viewport:       output viewing plane coordinate
 //    ndc:            output normalized device coordinate
@@ -62,6 +63,7 @@ void calcViewport(out vec3 viewport, out vec2 ndc, out vec2 uv,
     viewport = vec3(ndc * vec2(aspect, 1.0) * (viewportHeight * 0.5), -focalLength);
 }
 
+//Sources Used: GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
 // calcRay: calculate the ray direction and origin for the current pixel
 //    rayDirection: output direction of ray from origin
 //    rayOrigin:    output origin point of ray
@@ -87,7 +89,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport, sphere
 	//setup
 	vec3 dp;
 	vec4 color = vec4(0.0);
-	bool hit = false;
+	float hit = 0.0;
 	
 	//setup light
 	pointLight light;
@@ -135,16 +137,12 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin, in vec3 viewport, sphere
 	        
 	        //add color
 	        color += vec4(lightcolor, 1.0);
-	        hit = true;
+	        hit = 1.0;
 	    }    
     }
     
-    if (hit){
-    	return color;
-    }
-    
     //return texture if not hit
-	return texture(uTex, vTexcoord);
+	return color * hit + texture(uTex, vTexcoord) * (1.0 - hit);
 }
 
 void main()
@@ -159,27 +157,27 @@ void main()
 	// declare each objects position, radius, and animation
 	obj[0].center = vec4(0.0);
 	obj[0].radius = 0.025;
-	obj[0].center.x += sin(uTime * 5)/7.0;
+	obj[0].center.x += sin(uTime * 5) * 0.14285;
 	obj[0].center.y = mod(obj[0].center.y + uTime, 2.2) - 1.0;
 	
 	obj[1].center = vec4(-0.25, 0.0, 0.0, 1.0);
 	obj[1].radius = 0.035;
-	obj[1].center.x += sin(uTime * 2)/7.0;
+	obj[1].center.x += sin(uTime * 2) * 0.14285;
 	obj[1].center.y = mod(obj[1].center.y + uTime * 0.5, 2.2) - 1.0;
 	
 	obj[2].center = vec4(0.25, 0.0, 0.0, 1.0);
 	obj[2].radius = 0.020;
-	obj[2].center.x += sin(uTime * 3)/7.0;
+	obj[2].center.x += sin(uTime * 3) * 0.14285;
 	obj[2].center.y = mod(obj[2].center.y + uTime * 1.2, 2.2) - 1.0;
 	
 	obj[3].center = vec4(-0.5, 0.0, 0.0, 1.0);
 	obj[3].radius = 0.045;
-	obj[3].center.x += sin(uTime * 6)/7.0;
+	obj[3].center.x += sin(uTime * 6) * 0.14285;
 	obj[3].center.y = mod(obj[3].center.y + uTime * 0.9, 2.2) - 1.0;
 	
 	obj[4].center = vec4(0.5, 0.0, 0.0, 1.0);
 	obj[4].radius = 0.035;
-	obj[4].center.x += sin(uTime * 4)/7.0;
+	obj[4].center.x += sin(uTime * 4) * 0.14285;
 	obj[4].center.y = mod(obj[4].center.y + uTime * 0.8, 2.2) - 1.0;
 	
 	//----------------------------------------------------

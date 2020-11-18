@@ -1,5 +1,10 @@
 #version 450
 
+//input consts
+const int T = 84; //Texture
+const int P = 80; //Phong
+const int L = 76; //Light
+
 //output
 layout (location = 0) out vec4 rtFragColor;
 
@@ -17,6 +22,7 @@ struct pointLight {
 //uniforms and textures
 uniform mat4 uModelMat, uViewMat, uProjMat;
 uniform sampler2D uTextureMap;
+uniform sampler2D uKeyboard;
 
 //input from vertex
 in vec3 vNormal;
@@ -27,8 +33,14 @@ in pointLight light[3];
 
 void main()
 {
+	//gather input
+	float toggleTexture = 1.0 - texelFetch(uKeyboard, ivec2(T	, 0), 0).x;
+	float togglePhong 	= 1.0 - texelFetch(uKeyboard, ivec2(P	, 0), 0).x; 
+	float toggleLight 	= 1.0 - texelFetch(uKeyboard, ivec2(L	, 0), 0).x; 
+	
 	//start with texture for color
-	vec4 color = texture(uTextureMap, vTexcoord.xy);
+	vec4 color = texture(uTextureMap, vTexcoord.xy) * toggleTexture;
+	color += vec4(0.5) * (1.0 - toggleTexture);
 	
 	//start with black for light
 	vec4 lightColor = vec4(0.0);
@@ -58,13 +70,14 @@ void main()
 	    specularIn *= specularIn; //^16
 	    
 	    //make sure specular does not go through
-	    vec3 specular = vec3(specularIn) * diffCo; 
+	    vec3 specular = vec3(specularIn) * diffCo * togglePhong; 
 		
 		//calc color with light
-		vec3 lightResult = diffCo * attenIn * light[i].color.xyz + specular;
+		vec3 lightResult = diffCo * attenIn * light[i].color.xyz * toggleLight + specular;
 		lightColor += vec4(lightResult, 1.0);
 	}
 	
 	//output final color
 	rtFragColor = lightColor * color;
+	rtFragColor += color * (1.0 - toggleLight);
 }

@@ -4,13 +4,13 @@
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec2 aTexcoord;
 
-//uniforms
+//uniform
 uniform mat4 uModelMat, uViewMat, uProjMat;
 
 //varraying
 out vec2 vTexcoord;
 
-void main(){        
+void main(){    
     //pass position
     gl_Position = aPosition;
     
