@@ -87,6 +87,83 @@
 						<value>0</value>
 					</row>
 				</variable>
+				<variable type="float" name="uTime" system="Time" />
+			</variables>
+			<macros />
+		</pass>
+		<pass name="Luminosity" type="shader" active="true">
+			<shader type="vs" path="Luminosity_VS.glsl" entry="main" />
+			<shader type="ps" path="Luminosity_FS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture name="rtLuminosity" />
+			<items>
+				<item name="sLumin" type="geometry">
+					<type>ScreenQuadNDC</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="uModelMat" system="GeometryTransform" />
+				<variable type="float4x4" name="uViewMat">
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+				</variable>
+				<variable type="float4x4" name="uProjMat">
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+					<row>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+						<value>0</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -212,42 +289,41 @@
 	</pipeline>
 	<objects>
 		<object type="rendertexture" name="rtScene" fsize="662,773" clear="true">
-			<bind slot="1" name="Scene" />
 			<bind slot="0" name="FSQ" />
-			<bind slot="3" name="Blur" />
-			<bind slot="1" name="Display" />
 		</object>
 		<object type="texture" path="sky2.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="0" name="Scene" />
 			<bind slot="1" name="FSQ" />
-			<bind slot="1" name="Blur" />
 		</object>
 		<object type="rendertexture" name="rtFSQ" fsize="647,773" clear="true">
-			<bind slot="2" name="Scene" />
-			<bind slot="2" name="FSQ" />
-			<bind slot="0" name="Blur" />
+			<bind slot="0" name="Luminosity" />
+			<bind slot="0" name="Display" />
 		</object>
 		<object type="rendertexture" name="rtBlur" fsize="719,773" clear="true">
-			<bind slot="3" name="Scene" />
-			<bind slot="3" name="FSQ" />
-			<bind slot="2" name="Blur" />
-			<bind slot="0" name="Display" />
+			<bind slot="1" name="Display" />
+		</object>
+		<object type="rendertexture" name="rtLuminosity" fsize="628,634" clear="true">
+			<bind slot="0" name="Blur" />
 		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="Scene" shader="vs" />
-		<entry type="file" name="Scene" shader="ps" />
+		<entry type="file" name="Luminosity" shader="ps" />
 		<entry type="file" name="FSQ" shader="vs" />
 		<entry type="file" name="FSQ" shader="ps" />
+		<entry type="file" name="Scene" shader="vs" />
+		<entry type="file" name="Scene" shader="ps" />
 		<entry type="file" name="Blur" shader="vs" />
 		<entry type="file" name="Blur" shader="ps" />
 		<entry type="file" name="Display" shader="vs" />
 		<entry type="file" name="Display" shader="ps" />
+		<entry type="file" name="Luminosity" shader="vs" />
+		<entry type="pinned" name="uViewMat" owner="Luminosity" />
+		<entry type="pinned" name="uProjMat" owner="Luminosity" />
 		<entry type="camera" fp="false">
-			<distance>10</distance>
-			<pitch>19</pitch>
-			<yaw>30</yaw>
+			<distance>9</distance>
+			<pitch>18</pitch>
+			<yaw>70</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

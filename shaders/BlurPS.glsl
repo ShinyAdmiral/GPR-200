@@ -1,5 +1,6 @@
 #version 450
 
+//input and output
 layout (location = 0) out vec4 rtFragColor;
 layout (location = 1) in vec4 gl_FragCoord;
 
@@ -7,6 +8,10 @@ layout (location = 1) in vec4 gl_FragCoord;
 uniform sampler2D uTex;
 uniform vec2 uResolution;
 
+// guassianBlur: Blur image
+//    tex:     texture passed form previous buffer
+//    coord:   fragment coordinate
+//    res:     inverse Resolution of image
 vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res)
 {
     //make temp color
@@ -42,7 +47,9 @@ vec4 guassianBlur(sampler2D tex, vec2 coord, vec2 res)
 }
 void main()
 {
-	vec2 invRes = 1.0 / uResolution;
-	vec4 col = guassianBlur(uTex, gl_FragCoord.xy, invRes);
+	//get blur image
+	vec4 col = guassianBlur(uTex, gl_FragCoord.xy, 1.0 / uResolution);
+	
+	//output
 	rtFragColor = col;
 }

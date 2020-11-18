@@ -1,9 +1,11 @@
 #version 450
 
+//inputs
 layout (location = 0) in vec4 aPosition;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec4 aTexcoord;
 
+//uniforms
 uniform mat4 uModelMat, uViewMat, uProjMat;
 
 //------------------------------------------
@@ -18,7 +20,6 @@ struct pointLight {
 };
 
 //varraying
-//out vec4 vPosClip;
 out vec3 vNormal;
 out vec4 vTexcoord;
 out vec4 vPosition;
@@ -26,22 +27,23 @@ out vec4 vCamPos;
 out pointLight light[3];
 
 void main(){    
-    //Clip
-    //PERSPECTIVE
+    //World Space
     vPosition = uModelMat * aPosition;
     
-    vCamPos = uViewMat * uModelMat * aPosition;
+    //Clip
+    //PERSPECTIVE
+    vCamPos = uViewMat * vPosition;
     
+    //vertex position pass
     gl_Position = uProjMat * vCamPos;
     
     // NORMAL PIPELINE
-	//mat3 normalMat = transpose(inverse(mat3(uViewMat * uModelMat)));
 	vNormal = (uModelMat * vec4(aNormal,0)).xyz;															
 	
-    //vPosClip = gl_Position;
-    
+    //texture coordinate pass
     vTexcoord = aTexcoord;
 	
+	//declare each light
 	light[0].center = uModelMat * vec4(10.0, 10.0, 0.0, 1.0);
 	light[0].color = vec4(1.0, 1.0, 0.0, 1.0);
 	light[0].intensity = 100000.0;
