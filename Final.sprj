@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project version="2">
+	<pipeline>
+		<pass name="Simple" type="shader" active="true">
+			<shader type="vs" path="shaders/Final_SimpleVS.glsl" entry="main" />
+			<shader type="ps" path="shaders/Final_SimplePS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="Terrain" type="model">
+					<filepath>SubDPlane.fbx</filepath>
+					<grouponly>false</grouponly>
+					<scaleX>5</scaleX>
+					<scaleY>20</scaleY>
+					<scaleZ>20</scaleZ>
+					<roll>1.57079637</roll>
+					<y>-5.86922455</y>
+				</item>
+				<item name="Water" type="model">
+					<filepath>SubDPlane.fbx</filepath>
+					<grouponly>false</grouponly>
+					<scaleX>5</scaleX>
+					<scaleY>20</scaleY>
+					<scaleZ>20</scaleZ>
+					<roll>1.57079637</roll>
+					<y>2.21111393</y>
+				</item>
+			</items>
+			<itemvalues>
+				<value variable="matMaxHeight" for="Terrain">
+					<row>
+						<value>3.66000009</value>
+					</row>
+				</value>
+				<value variable="water" for="Water">
+					<row>
+						<value>true</value>
+					</row>
+				</value>
+			</itemvalues>
+			<variables>
+				<variable type="float4x4" name="matVP" system="ViewProjection" />
+				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
+				<variable type="float" name="iTime" system="Time" />
+				<variable type="float" name="matMaxHeight">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
+				<variable type="bool" name="water">
+					<row>
+						<value>false</value>
+					</row>
+				</variable>
+			</variables>
+			<macros />
+		</pass>
+	</pipeline>
+	<objects>
+		<object type="texture" path="1_vs239SecVBaB4HvLsZ8O5Q.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="0" name="Simple" />
+		</object>
+		<object type="texture" path="Champlain_College_seal.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat" />
+	</objects>
+	<cameras />
+	<settings>
+		<entry type="file" name="Simple" shader="ps" />
+		<entry type="file" name="Simple" shader="vs" />
+		<entry type="pinned" name="matMaxHeight" owner="Simple" />
+		<entry type="pinned" name="water" owner="Simple" />
+		<entry type="camera" fp="false">
+			<distance>50</distance>
+			<pitch>40</pitch>
+			<yaw>287</yaw>
+			<roll>360</roll>
+		</entry>
+		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
+		<entry type="usealpha" val="false" />
+	</settings>
+	<plugindata />
+</project>
