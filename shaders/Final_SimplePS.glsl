@@ -4,34 +4,32 @@ in vec4 color;
 out vec4 outColor;
 in vec2 bWater;
 in vec3 loc;
-void main() {
-	//outColor = color*.5+.5; // adjust range
-	if(false)
-	{
-		outColor = color*.5+.5; // adjust range
-		return;
-	}
-	if(bWater.x > 0.)
-	{
-		outColor =	vec4(0.,0.,100.,.25);
-		return;
-	}
-	float angle = dot(color.xyz, vec3(0.,0.,1.));
-	if(angle > .35)
-	{
-		if(loc.x > 0.5)
-		{
-			float sColor = loc.x;
-			outColor = vec4(sColor);
-		}
-		else
-		{
-			outColor = vec4(0.,angle,0., 1.);
-		}
-		return;
-	}
-	else
-	{
-		outColor = vec4(angle);
-	}
+in float noiseInfo;
+uniform sampler2D colorTex;
+/*
+biome info:
+
+> .8 - snow
+.80 - .7 rock / dirty snow
+.
+
+*/
+
+float snowStart = 1.;
+float snowEnd = .6;
+vec4 snowColor = vec4(1.);
+
+float rockStart = snowEnd;
+float rockEnd = .5;
+vec4 rockColor = vec4(.2);
+
+float grassStart = rockEnd;
+float grassEnd = 0.;
+vec4  grassColor = vec4(0.,.5,0.,0.) ;
+
+float terrainBlend = .2;
+
+void main() 
+{
+	outColor = texture(colorTex, vec2(.5,0.));
 }
