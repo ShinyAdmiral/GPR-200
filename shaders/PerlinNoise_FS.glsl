@@ -64,26 +64,26 @@ void main(){
 	vec2 inputOffset = keyInputs.xy;
 	
 	#ifdef water
-	float scale = 50.0 * timeRangeS(uTime * 0.5, 0.1, 0.9);
-	float ratio = 0.5;
-	uv += timeRangeS(uTime * 0.1, 0.5, 0.5);
-	float timeModS = timeRangeS(uTime, 0.1, 0.9) * 0.2 + 0.4;
-	float timeModC = timeRangeC(uTime, 0.15, 0.9) * 0.2 + 0.4;
-	mat2 matrixOctave = mat2(1.7 * timeModS, 0.8 * timeModC,
-							 -0.8 * timeModC, 1.7 * timeModS);
+	float scale = 50.0 * timeRangeS(uTime * 0.1, 0.1, 0.9);
+	float ratio = 0.05;
+	uv += timeRangeS(uTime * 0.2, 0.1, 0.9);
+	float timeModS = timeRangeS(uTime * 0.5, 0.2, 0.7) * 0.2;
+	float timeModC = timeRangeC(uTime * 0.5, 0.2, 0.7) * 0.2;
+	mat2 matrixOctave = mat2(1.2 * timeModS, 0.8 * timeModC,
+							 -0.8 * timeModC, 1.2 * timeModS);
 	
 	vec2 scalePos = uv * scale;
-	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave);
-	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave);
-	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave);
+	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
+	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
+	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
 
 
 	
 	#else
-	float scale = 5.0;
+	float scale = 4.0;
 	float ratio = 0.5;
-	mat2 matrixOctave = mat2(1.7 , 0.8,
-							 -0.8, 1.7);
+	mat2 matrixOctave = mat2(1.3 , 0.7,
+							 -0.7, 1.3);
 	
 	vec2 scalePos = uv * scale + inputOffset;
 	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
