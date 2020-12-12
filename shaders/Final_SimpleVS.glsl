@@ -12,36 +12,39 @@ layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoord;
 out vec4 color;
 out vec2 bWater;
+out vec3 loc;
 void main() 
 {
+float maxHeight;
 	if(water)
 	{
 	bWater = vec2(1.,1.);
+	maxHeight = 0;
 	}
 	else
 	{
 	bWater = vec2(0.,0.);
+	maxHeight = 3.5;
 	}
 
 	vec2 lookUp = texCoord;
 	float timeOff = iTime;
-	timeOff = 1.2;
-	float scale = .85;
-	lookUp *= scale; 				
-	
+	float scale = .15;
 	float origin = texture(noiseTex, lookUp).r;
 
-	float dif = 0.01;
-	vec2 off = vec2(dif,dif);
-	float top =    texture(noiseTex, lookUp + off.y).r;
-	float bottom = texture(noiseTex, lookUp - off.y).r;
-	float left =   texture(noiseTex, lookUp + off.x).r;
-	float right =  texture(noiseTex, lookUp - off.x).r;
+	float dif = 1./100.; // look for slight blue
+	vec3 topOffset   = vec3(0.,dif, 0.);
+	vec3 bottomOffset= vec3(0.,-dif, 0.) ;
+	vec3 rightOffset =  vec3(-dif, 0., 0.);
+	vec3 leftOffset  = vec3(dif, 0., 0.);
+	topOffset.z =    texture(noiseTex, lookUp + topOffset.xy).r;
+	bottomOffset.z = texture(noiseTex, lookUp + bottomOffset.xy).r;
+	leftOffset.z =   texture(noiseTex, lookUp + leftOffset.xy).r;
+	rightOffset.z =  texture(noiseTex, lookUp + rightOffset.xy).r;
 				
 	vec4 newPos = vec4(pos, 1.);
-	float maxHeight = matMaxHeight;
 	
-	maxHeight *= .2;
+	maxHeight *= .3;
 	newPos.x += origin * maxHeight;
 	
 	vec3 newNorm = vec3(0.0);
@@ -49,21 +52,20 @@ void main()
 	newNorm = vec3(origin);
 	
 	// uv & sample
-	vec3 deltaHoriz = vec3(off.x + off.x, 0., right - left);	
-	vec3 deltaVertical = vec3(0., off.y + off.y,  top - bottom);
-	deltaHoriz = normalize(deltaHoriz);
-	deltaVertical = normalize(deltaVertical);
+	vec3 deltaHoriz = topOffset-bottomOffset;
+	vec3 deltaVertical = rightOffset-leftOffset;
 	newNorm = cross(deltaHoriz, deltaVertical);
-	
-	newNorm = texture(normTex, lookUp).xyz;
+	newNorm = normalize(newNorm);
 
 	color = vec4(newNorm, 1.0); // alpha blending
+
+
 	if(water)
 	{
 		color = vec4(0.,0.,1.,0.);
 	}
 
-
+	loc = newPos.xyz;
 	gl_Position = matVP * matGeo * newPos;
 
 }

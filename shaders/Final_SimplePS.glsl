@@ -3,23 +3,31 @@
 in vec4 color;
 out vec4 outColor;
 in vec2 bWater;
+in vec3 loc;
 void main() {
-
-if(true)
-{
-	outColor = color;
-	return;
-}
-	if(bWater.x > 0.)
+	//outColor = color*.5+.5; // adjust range
+	if(false)
 	{
-		outColor =	vec4(0.,0.,1.,.25);
+		outColor = color*.5+.5; // adjust range
 		return;
 	}
-	
-	float angle = dot(vec3(0,0,1.), color.xyz);
-	if(angle > .5)
+	if(bWater.x > 0.)
 	{
-		outColor = vec4(0.,angle,0., 1.);
+		outColor =	vec4(0.,0.,100.,.25);
+		return;
+	}
+	float angle = dot(color.xyz, vec3(0.,0.,1.));
+	if(angle > .35)
+	{
+		if(loc.x > 0.5)
+		{
+			float sColor = loc.x;
+			outColor = vec4(sColor);
+		}
+		else
+		{
+			outColor = vec4(0.,angle,0., 1.);
+		}
 		return;
 	}
 	else
