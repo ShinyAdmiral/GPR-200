@@ -42,7 +42,7 @@
 				<item value="Normal" semantic="NORMAL" />
 				<item value="Texcoord" semantic="TEXCOORD0" />
 			</inputlayout>
-			<rendertexture />
+			<rendertexture name="RT_World" />
 			<items>
 				<item name="TerrainModel" type="model">
 					<filepath>TerrainPlane.fbx</filepath>
@@ -82,9 +82,30 @@
 			</variables>
 			<macros />
 		</pass>
+		<pass name="WaterColor" type="shader" active="true">
+			<shader type="vs" path="shaders\WaterColor_VS.glsl" entry="main" />
+			<shader type="ps" path="shaders\WaterColor_FS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="FSQ_WaterColor" type="geometry">
+					<type>ScreenQuadNDC</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<macros />
+		</pass>
 	</pipeline>
 	<objects>
-		<object type="rendertexture" name="RT_PerlinNoise" fsize="766,1133" clear="true">
+		<object type="rendertexture" name="RT_PerlinNoise" fsize="1000,1000" clear="true">
 			<bind slot="0" name="TerrainGeneration" />
 		</object>
 		<object type="buffer" name="bInput" size="16" format="vec4" pausedpreview="false">
@@ -94,17 +115,21 @@
 		<object type="texture" name="RT_Keyboard" keyboard_texture="true">
 			<bind slot="0" name="CInput" />
 		</object>
+		<object type="rendertexture" name="RT_World" fsize="535,731" clear="true" />
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="TerrainGeneration" shader="ps" />
+		<entry type="property" name="WaterColor" item="pipe" />
+		<entry type="file" name="WaterColor" shader="vs" />
+		<entry type="file" name="WaterColor" shader="ps" />
 		<entry type="file" name="TerrainGeneration" shader="vs" />
+		<entry type="file" name="TerrainGeneration" shader="ps" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
 			<distance>50</distance>
-			<pitch>36</pitch>
-			<yaw>148</yaw>
+			<pitch>57</pitch>
+			<yaw>317</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
