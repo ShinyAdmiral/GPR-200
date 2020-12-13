@@ -42,7 +42,7 @@
 				<item value="Normal" semantic="NORMAL" />
 				<item value="Texcoord" semantic="TEXCOORD0" />
 			</inputlayout>
-			<rendertexture name="RT_World" />
+			<rendertexture />
 			<items>
 				<item name="TerrainModel" type="model">
 					<filepath>TerrainPlane.fbx</filepath>
@@ -79,6 +79,11 @@
 				<variable type="int" name="colorTex">
 					<row>
 						<value>1</value>
+					</row>
+				</variable>
+				<variable type="int" name="noiseTex">
+					<row>
+						<value>0</value>
 					</row>
 				</variable>
 			</variables>
@@ -118,23 +123,20 @@
 			<bind slot="0" name="CInput" />
 		</object>
 		<object type="rendertexture" name="RT_World" fsize="535,731" clear="true" />
-		<object type="texture" path="TextureLookupTable.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+		<object type="texture" path="TextureLookupTable.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="ClampToEdge" wrap_t="ClampToEdge">
 			<bind slot="1" name="TerrainGeneration" />
 		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="property" name="WaterColor" item="pipe" />
-		<entry type="file" name="WaterColor" shader="vs" />
-		<entry type="file" name="WaterColor" shader="ps" />
-		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="file" name="TerrainGeneration" shader="ps" />
+		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>6</distance>
-			<pitch>34</pitch>
-			<yaw>284</yaw>
+			<distance>3</distance>
+			<pitch>35</pitch>
+			<yaw>136</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
