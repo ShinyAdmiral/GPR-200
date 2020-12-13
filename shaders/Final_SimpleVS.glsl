@@ -37,7 +37,7 @@ void doDisplacementFromMap(float maxHeight, sampler2D tex)
 	bottomOffset.z = texture(tex, lookUp + bottomOffset.xy).r;
 	leftOffset.z =   texture(tex, lookUp + leftOffset.xy).r;
 	rightOffset.z =  texture(tex, lookUp + rightOffset.xy).r;			
-	vPosition.x += origin * maxHeight;
+	vPosition.z += origin * maxHeight;
 	
 	// uv & sample
 	vec3 deltaHoriz = topOffset-bottomOffset;
@@ -52,7 +52,7 @@ void main()
 	if(water)
 	{
 		bWater = vec2(1.,1.);
-		maxHeight = 0;
+		maxHeight = 1;
 		doDisplacementFromMap(1, waterTex);
 	}
 	else
@@ -67,9 +67,8 @@ void main()
 	mat4 modelViewMat = matProj * matView * matGeo;
 	
 	VRayPos = (modelViewMat*vec4(0.0)).xyz;
-	vLightPos1 = vec4(0,100,0,1000);
+	vLightPos1 = vec4(1,3,2,13);
 
 
 	gl_Position = modelViewMat * vPosition;	
-	vPosition = vec4(vPosition.xyz, 0.);
 }

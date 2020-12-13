@@ -35,16 +35,17 @@ vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in 
                                            normal.xyz);
     float specular = max(0.0, dot(viewVector, reflectedLightVector));
     specular *= specular; // specularCoefficient^2
-    specular *= specular; // specularCoefficient^4
-    specular *= specular * specular * specular; // specularCoefficient^16
-    specular *= specular * specular * specular; // specularCoefficient^64
+   specular *= specular; // specularCoefficient^4
+//    specular *= specular * specular * specular; // specularCoefficient^16
+    //specular *= specular * specular * specular; // specularCoefficient^64
 
 	if(bWater.x > 0)
 	{
 		surfaceColor = vec4(0.,0.,1.,1);
+//		return vec4(specular);
 		return (0.15 + (Lambertian + specular) * lightcolor) * surfaceColor; //Phong color
 	}
-    return 0.05 + Lambertian  * lightcolor* surfaceColor; //Phong color
+    return (0.15 + (Lambertian + specular) * lightcolor) * surfaceColor; //Phong color
     
 }
 
@@ -52,5 +53,5 @@ vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in 
 
 void main() 
 {
-	outColor = calcLighting(vLightPos1,vec4(1.0),vLightPos1.w, vPosition,vNormal.xyz,VRayPos);	
+	outColor = calcLighting(vLightPos1,vec4(1),vLightPos1.w, vPosition,vNormal.xyz,VRayPos);	
 }

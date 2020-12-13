@@ -70,30 +70,20 @@
 			</inputlayout>
 			<rendertexture name="RT_World" />
 			<items>
-				<item name="TerrainModel" type="model">
-					<filepath>TerrainPlane.fbx</filepath>
+				<item name="P_Terrain" type="model">
+					<filepath>..\..\PlaneTest.fbx</filepath>
 					<grouponly>false</grouponly>
-					<roll>1.57079637</roll>
+					<pitch>-1.57079637</pitch>
 				</item>
-				<item name="Water" type="model">
-					<filepath>water.fbx</filepath>
+				<item name="P_Water" type="model">
+					<filepath>WaterNew.fbx</filepath>
 					<grouponly>false</grouponly>
-					<roll>1.57079637</roll>
-					<y>0.264999986</y>
+					<pitch>-1.57079637</pitch>
+					<y>0.287457645</y>
 				</item>
 			</items>
 			<itemvalues>
-				<value variable="water" for="TerrainModel">
-					<row>
-						<value>false</value>
-					</row>
-				</value>
-				<value variable="matMaxHeight" for="TerrainModel">
-					<row>
-						<value>5</value>
-					</row>
-				</value>
-				<value variable="water" for="Water">
+				<value variable="water" for="P_Water">
 					<row>
 						<value>true</value>
 					</row>
@@ -209,22 +199,14 @@
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="file" name="TerrainGeneration" shader="ps" />
-		<entry type="file" name="PerlinNoise" shader="vs" />
-		<entry type="file" name="PerlinNoise" shader="ps" />
-		<entry type="file" name="WaterPerlin" shader="vs" />
-		<entry type="file" name="WaterPerlin" shader="ps" />
-		<entry type="file" name="WaterColor" shader="vs" />
-		<entry type="file" name="WaterColor" shader="ps" />
-		<entry type="file" name="Display" shader="vs" />
-		<entry type="file" name="Display" shader="ps" />
+		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>6</distance>
-			<pitch>38</pitch>
-			<yaw>86</yaw>
+			<distance>3</distance>
+			<pitch>34</pitch>
+			<yaw>37</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
