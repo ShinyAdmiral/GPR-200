@@ -1,6 +1,6 @@
 #version 450
 #define PI 3.14159265358979
-#define SAMP_NUM 200
+#define SAMP_NUM 10
 
 //credit: https://www.shadertoy.com/view/ltyGRV
 

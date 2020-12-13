@@ -7,6 +7,7 @@ in vec3 loc;
 in float noiseInfo;
 uniform sampler2D noiseTex;
 uniform sampler2D colorTex;
+in float Time;
 /*
 biome info:
 wddsadwasdawdaa
@@ -32,8 +33,10 @@ float terrainBlend = .2;
 
 void main() 
 {
-	float blend = 0.05;
-	vec4 above = texture(colorTex, vec2(1-noiseInfo-.3+blend,0.));
-	vec4 below = texture(colorTex, vec2(1-noiseInfo-.3-blend,0.));
-	outColor = mix(above,below,.5);
+	if(bWater.x > 0)
+	{
+		outColor = vec4(0,.4,.8,1);
+		return;
+	}
+	outColor = texture(colorTex, vec2(1-noiseInfo-.20, 0.) * .8);
 }

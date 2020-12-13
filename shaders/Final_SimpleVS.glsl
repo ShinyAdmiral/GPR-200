@@ -13,8 +13,10 @@ out vec4 color;
 out vec2 bWater;
 out vec3 loc;
 out float noiseInfo;
+out float Time;
 void main() 
 {
+	Time = iTime;
 	float maxHeight;
 	if(water)
 	{
