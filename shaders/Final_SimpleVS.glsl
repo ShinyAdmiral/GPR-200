@@ -1,6 +1,7 @@
 #version 450
 
-uniform mat4 matVP;
+uniform mat4 matView;
+uniform mat4 matProj;
 uniform mat4 matGeo;
 uniform float matMaxHeight;
 uniform sampler2D noiseTex;
@@ -54,7 +55,13 @@ void main()
 	vec3 deltaVertical = rightOffset-leftOffset;
 	vNormal = vec4(cross(deltaHoriz, deltaVertical), 1.);
 	vNormal = normalize(vNormal);
+	//POSITION PIPELINE
+	mat4 modelViewMat = matProj * matView * matGeo;
+	
+	VRayPos = (modelViewMat*vec4(0.0)).xyz;
+	vLightPos1 = vec4(0,100,0,1000);
 
-	gl_Position = matVP * matGeo * vPosition;
 
+	gl_Position = modelViewMat * vPosition;	
+	vPosition = vec4(vPosition.xyz, 0.);
 }

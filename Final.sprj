@@ -110,7 +110,7 @@
 						<value>0</value>
 					</row>
 				</variable>
-				<variable type="float4x4" name="matVP" system="ViewProjection" />
+				<variable type="float4x4" name="matView" system="View" />
 				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
 				<variable type="int" name="noiseTex">
 					<row>
@@ -122,6 +122,7 @@
 						<value>1</value>
 					</row>
 				</variable>
+				<variable type="float4x4" name="matProj" system="Projection" />
 			</variables>
 			<macros />
 		</pass>
@@ -173,27 +174,15 @@
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="property" name="WaterPerlin" item="pipe" />
-		<entry type="file" name="WaterColor" shader="vs" />
-		<entry type="file" name="WaterColor" shader="ps" />
-		<entry type="file" name="PerlinNoise" shader="vs" />
-		<entry type="file" name="PerlinNoise" shader="ps" />
-		<entry type="file" name="WaterPerlin" shader="vs" />
-		<entry type="file" name="WaterPerlin" shader="ps" />
+		<entry type="property" name="Water" item="pipe" />
 		<entry type="file" name="TerrainGeneration" shader="ps" />
 		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>3</distance>
-			<pitch>45</pitch>
-			<yaw>183</yaw>
-			<distance>3</distance>
-			<pitch>26</pitch>
-			<yaw>161</yaw>
 			<distance>4</distance>
-			<pitch>31</pitch>
-			<yaw>145</yaw>
+			<pitch>63</pitch>
+			<yaw>215</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
