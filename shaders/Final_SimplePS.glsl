@@ -1,35 +1,53 @@
 #version 450
 
-in vec4 color;
 out vec4 outColor;
 in vec2 bWater;
-in vec3 loc;
 in float noiseInfo;
+//PER-FRAGMENT: recieving stuff used for final color
+in vec4 vNormal;
+in vec4 vLightPos1;
+in vec4 vLightPos2;
+in vec3 VRayPos;
+in vec4 vPosition;
+
 uniform sampler2D noiseTex;
 uniform sampler2D colorTex;
-in float Time;
-/*
-biome info:
-wddsadwasdawdaa
-> .8 - snow
-.80 - .7 rock / dirty snow
-.
 
-*/
 
-float snowStart = 1.;
-float snowEnd = .6;
-vec4 snowColor = vec4(1.);
 
-float rockStart = .5;
-float rockEnd = .4;
-vec4 rockColor = vec4(.2);
+vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in vec4 position,
+                   in vec3 normal, in vec3 rayOrigin)
+{
+    //Taken from Lab 4
+    // LAMBERTIAN REFLECTANCE
+    vec3 lightVector = lightpos.xyz - position.xyz; // get vector of position to the light
+	float lightLength = length(lightVector); // get length of light vector
+    lightVector = lightVector / lightLength; // normalizes vector
+   
+    float diffuseCoefficient = max(0.0, dot(lightVector, normal)); // get coefficient
+   
+    float intensityRatio = lightLength/lightintense; // simplifying attenuation equation by doing this once
+    float attenuation = 1.0 / (1.0 + intensityRatio +
+                             (intensityRatio * intensityRatio)); // get attenuation
+    float Lambertian = diffuseCoefficient * attenuation; // final lambertian
 
-float grassStart = rockEnd;
-float grassEnd = 0.;
-vec4  grassColor = vec4(0.,.5,0.,0.) ;
+   // PHONG REFLECTANCE
+        
+    vec3 viewVector = normalize(rayOrigin.xyz - position.xyz);
+    vec3 reflectedLightVector =reflect(-normalize(lightVector).xyz, 
+                                           normal.xyz);
+    float specular = max(0.0, dot(viewVector, reflectedLightVector));
+    specular *= specular; // specularCoefficient^2
+    specular *= specular; // specularCoefficient^4
+    specular *= specular * specular * specular; // specularCoefficient^16
+    specular *= specular * specular * specular; // specularCoefficient^64
+   //return vec4(specularCoefficient);
+    vec4 ambient = vec4(0.3,0.3,0.3,0.0);
+        
+    return ambient * 0.15 + (Lambertian + specular) * lightcolor; //Phong color
+}
 
-float terrainBlend = .2;
+
 
 void main() 
 {

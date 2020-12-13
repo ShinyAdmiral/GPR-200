@@ -146,12 +146,14 @@
 	</objects>
 	<cameras />
 	<settings>
+		<entry type="file" name="TerrainGeneration" shader="ps" />
+		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
 			<distance>3</distance>
-			<pitch>45</pitch>
-			<yaw>183</yaw>
+			<pitch>26</pitch>
+			<yaw>161</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
