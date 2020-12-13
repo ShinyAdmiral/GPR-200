@@ -61,16 +61,19 @@ void main(){
 	//grab input from keyboard
 	vec2 inputOffset = keyInputs.xy;
 	
-	float scale = 4.0;
-	float ratio = 0.5;
-	mat2 matrixOctave = mat2(1.3 , 0.7,
-							 -0.7, 1.3);
+	float scale = 50.0 * timeRangeS(uTime * 0.1, 0.1, 0.9);
+	float ratio = 0.05;
+	uv += timeRangeS(uTime * 0.2, 0.1, 0.9);
+	float timeModS = timeRangeS(uTime * 0.5, 0.2, 0.7) * 0.2;
+	float timeModC = timeRangeC(uTime * 0.5, 0.2, 0.7) * 0.2;
+	mat2 matrixOctave = mat2(1.2 * timeModS, 0.8 * timeModC,
+							 -0.8 * timeModC, 1.2 * timeModS);
 	
-	vec2 scalePos = uv * scale + inputOffset;
+	vec2 scalePos = uv * scale;
 	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
 	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
 	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
-	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
+	
 	
 	rtFragColor = vec4(vec3(fractalNoise), 1.0);
 }
