@@ -9,12 +9,13 @@ layout (location = 1) in vec4 gl_FragCoord;
 
 uniform vec2 uResolution;
 uniform sampler2D uRT_world;
+uniform float uTime;
 
 vec3 rand(in vec2 coord, in float seed, out float Oseed){
 	
 	//base random seed
-	vec2 vec2Seed = vec2(42.0, 
-						 130.0);
+	vec2 vec2Seed = vec2(42.0  + uTime, 
+						 130.0 + uTime);
 	
 	//add to seed and get random red value
 	vec2Seed += seed;
