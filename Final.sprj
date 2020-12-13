@@ -78,7 +78,7 @@
 					<filepath>water.fbx</filepath>
 					<grouponly>false</grouponly>
 					<roll>1.57079637</roll>
-					<y>0.286793113</y>
+					<y>0.705214083</y>
 				</item>
 			</items>
 			<itemvalues>
@@ -123,6 +123,11 @@
 					</row>
 				</variable>
 				<variable type="float4x4" name="matProj" system="Projection" />
+				<variable type="int" name="waterTex">
+					<row>
+						<value>2</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -170,19 +175,22 @@
 		<object type="texture" path="texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="ClampToEdge" wrap_t="ClampToEdge">
 			<bind slot="1" name="TerrainGeneration" />
 		</object>
-		<object type="rendertexture" name="RT_WaterPerlin" fsize="672,578" clear="true" />
+		<object type="rendertexture" name="RT_WaterPerlin" fsize="672,578" clear="true">
+			<bind slot="2" name="TerrainGeneration" />
+		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="property" name="Water" item="pipe" />
 		<entry type="file" name="TerrainGeneration" shader="ps" />
 		<entry type="file" name="TerrainGeneration" shader="vs" />
+		<entry type="file" name="WaterPerlin" shader="ps" />
+		<entry type="file" name="WaterPerlin" shader="vs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
 			<distance>4</distance>
-			<pitch>63</pitch>
-			<yaw>215</yaw>
+			<pitch>20</pitch>
+			<yaw>267</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

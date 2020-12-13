@@ -5,6 +5,8 @@ uniform mat4 matProj;
 uniform mat4 matGeo;
 uniform float matMaxHeight;
 uniform sampler2D noiseTex;
+uniform sampler2D colorTex;
+uniform sampler2D waterTex;
 uniform float iTime;
 uniform bool water;
 
@@ -20,34 +22,21 @@ out vec4 vPosition;
 out vec2 bWater;
 out float noiseInfo;
 
-void main() 
+void doDisplacementFromMap(float maxHeight, sampler2D tex)
 {
-	float maxHeight;
-	if(water)
-	{
-	bWater = vec2(1.,1.);
-	maxHeight = 0;
-	}
-	else
-	{
-	bWater = vec2(0.,0.);
-	maxHeight = 3.5;
-	}
-	
 	vPosition = vec4(pos, 1.);
 	vec2 lookUp = texCoord;
-	float origin = texture(noiseTex, lookUp).r;
+	float origin = texture(tex, lookUp).r;
 	noiseInfo = origin;
 	float dif = 1./10.; 
 	vec3 topOffset   = vec3(0.,dif, 0.);
 	vec3 bottomOffset= vec3(0.,-dif, 0.) ;
 	vec3 rightOffset =  vec3(-dif, 0., 0.);
 	vec3 leftOffset  = vec3(dif, 0., 0.);
-	topOffset.z =    texture(noiseTex, lookUp + topOffset.xy).r;
-	bottomOffset.z = texture(noiseTex, lookUp + bottomOffset.xy).r;
-	leftOffset.z =   texture(noiseTex, lookUp + leftOffset.xy).r;
-	rightOffset.z =  texture(noiseTex, lookUp + rightOffset.xy).r;			
-	maxHeight *= .3;
+	topOffset.z =    texture(tex, lookUp + topOffset.xy).r;
+	bottomOffset.z = texture(tex, lookUp + bottomOffset.xy).r;
+	leftOffset.z =   texture(tex, lookUp + leftOffset.xy).r;
+	rightOffset.z =  texture(tex, lookUp + rightOffset.xy).r;			
 	vPosition.x += origin * maxHeight;
 	
 	// uv & sample
@@ -55,6 +44,25 @@ void main()
 	vec3 deltaVertical = rightOffset-leftOffset;
 	vNormal = vec4(cross(deltaHoriz, deltaVertical), 1.);
 	vNormal = normalize(vNormal);
+}
+
+void main() 
+{
+	float maxHeight;
+	if(water)
+	{
+		bWater = vec2(1.,1.);
+		maxHeight = 0;
+		doDisplacementFromMap(0.3, waterTex);
+	}
+	else
+	{
+		bWater = vec2(0.,0.);
+		maxHeight = 3.5;
+		doDisplacementFromMap(1., waterTex);
+	}
+	
+	
 	//POSITION PIPELINE
 	mat4 modelViewMat = matProj * matView * matGeo;
 	
