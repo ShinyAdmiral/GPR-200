@@ -167,6 +167,16 @@
 			<itemvalues />
 			<variables>
 				<variable type="float2" name="uResolution" system="ViewportSize" />
+				<variable type="int" name="uTexture">
+					<row>
+						<value>0</value>
+					</row>
+				</variable>
+				<variable type="int" name="uTV">
+					<row>
+						<value>1</value>
+					</row>
+				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -198,17 +208,25 @@
 		<object type="texture" path="water_texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="3" name="TerrainGeneration" />
 		</object>
+		<object type="texture" path="tvtext.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="1" name="Display" />
+		</object>
+		<object type="texture" path="abstract-white-wood-texture-background-natural-old-pattern-grayscale-surface-105837062.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="2" name="Display" />
+		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="TerrainGeneration" shader="ps" />
-		<entry type="file" name="TerrainGeneration" shader="vs" />
+		<entry type="file" name="Display" shader="vs" />
+		<entry type="file" name="Display" shader="ps" />
+		<entry type="file" name="WaterColor" shader="vs" />
+		<entry type="file" name="WaterColor" shader="ps" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>2</distance>
-			<pitch>25</pitch>
-			<yaw>314</yaw>
+			<distance>6</distance>
+			<pitch>38</pitch>
+			<yaw>171</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

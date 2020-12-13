@@ -5,6 +5,8 @@ layout (location = 1) in vec4 gl_FragCoord;
 
 uniform vec2 uResolution;
 uniform sampler2D uTexture;
+layout (binding = 1)uniform sampler2D uTV;
+layout (binding = 2)uniform sampler2D uWood;
 
 out vec2 vTexcoord;
 
@@ -18,7 +20,7 @@ void main(){
 	disp *= sqrt(length(disp));
 	disp *= sqrt(length(disp));
 	disp *= sqrt(length(disp));
-	uv += disp * 0.25;
+	uv += disp * 0.5;
 	
 	float aberration = 0.013;
 
@@ -37,7 +39,8 @@ void main(){
 	
 	//clamp texture	
 	if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-		color = vec4(0.0);
+		color = texture(uTV, uv) * vec4 (0.4, 0.32, 0.25, 1.0);
+		color *= texture(uWood, uv);
 	}
 	
 	rtFragColor = color;
