@@ -1,6 +1,6 @@
 #version 450
 #define PI 3.14159265358979
-#define SAMP_NUM 10
+#define SAMP_NUM 15
 
 //credit: https://www.shadertoy.com/view/ltyGRV
 
@@ -79,7 +79,29 @@ void main(){
 	vec2[2] pos;
 	pos[0] = gl_FragCoord.xy;
 	pos[1] = gl_FragCoord.xy;
-
+	
+	//VHS shift
+	float shift = 30;
+	float rate = 60.0;
+	float split = mod (uTime * rate, uResolution.y * 2);
+	
+	//shift everything if under split
+	if (pos[0].y < split){
+		pos[0].x += shift;
+		pos[1].x += shift;
+	}
+	else{
+	//else slowly move it back
+		float shiftRatio = shift * split/uResolution.y;
+	
+		pos[0].x += shift - shiftRatio;
+		pos[1].x += shift - shiftRatio;
+	}
+	
+	float wave = 0.5;
+	
+	pos[0].x += sin(gl_FragCoord.y * wave);
+	pos[1].x += sin(gl_FragCoord.y * wave);
 	
 	//start each color to gradient
 	vec3 color1 = vec3(0);
@@ -105,8 +127,8 @@ void main(){
 		float f2 = 4.0 * (0.7 - fact);
 		
 		//get color
-		color1 += f1 * (getColor(pos[0], invRes).xyz + 0.4 * rand(pos[0], seed, seed) * soften);
-		color1 += f2 * (getColor(pos[1], invRes).xyz + 0.4 * rand(pos[1], seed, seed) * soften);
+		color1 += f1 * (getColor(pos[0], invRes).xyz + 0.15 + 0.4 * rand(pos[0], seed, seed) * soften);
+		color1 += f2 * (getColor(pos[1], invRes).xyz + 0.15 + 0.4 * rand(pos[1], seed, seed) * soften);
 		
 		//add invers ratio for later control
 		control += f1 + f2;
@@ -117,5 +139,5 @@ void main(){
 	
 	//rtFragColor = texture(uRT_world, gl_FragCoord.xy/uResolution);
 	
-	rtFragColor= vec4(color1, 1.0);
+	rtFragColor = vec4(color1, 1.0) + rand(pos[0], seed, seed).x * 0.1;
 }
