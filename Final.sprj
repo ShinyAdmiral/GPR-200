@@ -103,6 +103,9 @@
 				</item>
 			</items>
 			<itemvalues />
+			<variables>
+				<variable type="float2" name="uResolution" system="ViewportSize" />
+			</variables>
 			<macros />
 		</pass>
 	</pipeline>
@@ -117,7 +120,9 @@
 		<object type="texture" name="RT_Keyboard" keyboard_texture="true">
 			<bind slot="0" name="CInput" />
 		</object>
-		<object type="rendertexture" name="RT_World" fsize="535,731" clear="true" />
+		<object type="rendertexture" name="RT_World" fsize="535,731" clear="true">
+			<bind slot="0" name="WaterColor" />
+		</object>
 		<object type="texture" path="TextureLookupTable.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="1" name="TerrainGeneration" />
 		</object>
@@ -127,14 +132,12 @@
 		<entry type="property" name="WaterColor" item="pipe" />
 		<entry type="file" name="WaterColor" shader="vs" />
 		<entry type="file" name="WaterColor" shader="ps" />
-		<entry type="file" name="TerrainGeneration" shader="vs" />
-		<entry type="file" name="TerrainGeneration" shader="ps" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>6</distance>
-			<pitch>34</pitch>
-			<yaw>284</yaw>
+			<distance>5</distance>
+			<pitch>24</pitch>
+			<yaw>354</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
