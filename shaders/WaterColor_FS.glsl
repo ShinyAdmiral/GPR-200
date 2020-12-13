@@ -1,7 +1,7 @@
 #version 450
 #define PI 3.14159265358979
 #define SAMP_NUM 15
-#define LINE_COUNT 30
+#define LINE_COUNT 20
 
 //credit: https://www.shadertoy.com/view/ltyGRV
 
@@ -84,9 +84,17 @@ void main(){
 	float shift = 50;
 	float rate = 60.0;
 	float split = mod (uTime * rate, uResolution.y * 2);
+	float glitch = split + 20;
+	
+	float wave = 0.5;
+	float height = 15;
 	
 	//shift everything if under split
-	if (pos[0].y < split){
+	if (pos[0].y > split && pos[0].y < glitch){
+		pos[0].x += sin(gl_FragCoord.y * wave) * height;
+		pos[1].x += sin(gl_FragCoord.y * wave) * height;
+	}
+	else if (pos[0].y < split){
 		pos[0].x += shift;
 		pos[1].x += shift;
 	}
@@ -98,10 +106,11 @@ void main(){
 		pos[1].x += shift - shiftRatio;
 	}
 	
-	float wave = 0.5;
+	wave = 0.5;
+	height = 2.0;
 	
-	pos[0].x += sin(gl_FragCoord.y * wave);
-	pos[1].x += sin(gl_FragCoord.y * wave);
+	pos[0].x += sin(gl_FragCoord.y * wave) * height;
+	pos[1].x += sin(gl_FragCoord.y * wave) * height;
 	
 	//start each color to gradient
 	vec3 color1 = vec3(0);
@@ -137,17 +146,7 @@ void main(){
 	//divide by control to prevent white out
 	color1 /= control*1.65;
 	
-	
-	//scan lines
-	vec2 uv = invRes * gl_FragCoord.xy;
-	float scanLines = clamp(0.35 + 0.35 * cos(uv.y * uResolution.y * 1.5), 0.0, 1.0);//credit: https://www.shadertoy.com/view/Ms23zG
-	
-	//saturate lines and add it to the image
-	scanLines *= scanLines;
-	color1 *= vec3(0.6 + 1.5 * scanLines);
-	
-	
-	//rtFragColor = texture(uRT_world, gl_FragCoord.xy/uResolution);
+
 	
 	rtFragColor = vec4(color1, 1.0) + rand(pos[0], seed, seed, uTime).x * 0.15;
 }

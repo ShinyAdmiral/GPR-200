@@ -52,7 +52,6 @@ void main()
 	if(water)
 	{
 		bWater = vec2(1.,1.);
-		maxHeight = 1;
 		doDisplacementFromMap(1, waterTex);
 	}
 	else
@@ -68,7 +67,6 @@ void main()
 	
 	VRayPos = (modelViewMat*vec4(0.0)).xyz;
 	vLightPos1 = vec4(1,3,2,13);
-
 
 	gl_Position = modelViewMat * vPosition;	
 }

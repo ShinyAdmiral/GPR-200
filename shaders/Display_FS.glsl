@@ -27,7 +27,14 @@ void main(){
 						texture(uTexture, uv * (1.0 - aberration)) * vec4(vec3(1.0, 0.0, 1.0), 1.0) +
 						texture(uTexture, uv * (1.0 + aberration)) * vec4(vec3(0.0, 1.0, 1.0), 1.0)) *
 						vec4(0.5, 0.5, 0.33, 0.33);  
-		
+	
+	//scan lines
+	float scanLines = clamp(0.35 + 0.35 * cos(uv.y * uResolution.y * 1.5), 0.0, 1.0);//credit: https://www.shadertoy.com/view/Ms23zG
+	
+	//saturate lines and add it to the image
+	scanLines *= scanLines;
+	color *= vec4(vec3(0.6 + 1.5 * scanLines), 1.0);
+	
 	//clamp texture	
 	if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
 		color = vec4(0.0);

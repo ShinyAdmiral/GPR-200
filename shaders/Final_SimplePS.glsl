@@ -12,7 +12,8 @@ in vec4 vPosition;
 
 uniform sampler2D noiseTex;
 uniform sampler2D colorTex;
-
+layout (binding = 2) uniform sampler2D waterTex;
+layout (binding = 3) uniform sampler2D waterColorTex;
 vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in vec4 position,
                    in vec3 normal, in vec3 rayOrigin)
 {
@@ -25,7 +26,6 @@ vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in 
    
     float intensityRatio = lightLength/lightintense; // simplifying attenuation equation by doing this once
     float attenuation = 1.0 / (1. + intensityRatio + (intensityRatio * intensityRatio)); // get attenuation
-	vec4 surfaceColor =  texture(colorTex, vec2(1-noiseInfo-.20, 0.) * .8);
     float Lambertian = diffuseCoefficient * attenuation; // final lambertian
 
    // PHONG REFLECTANCE
@@ -35,21 +35,18 @@ vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in 
                                            normal.xyz);
     float specular = max(0.0, dot(viewVector, reflectedLightVector));
     specular *= specular; // specularCoefficient^2
-   specular *= specular; // specularCoefficient^4
-//    specular *= specular * specular * specular; // specularCoefficient^16
+    specular *= specular; // specularCoefficient^4
+	//specular *= specular * specular * specular; // specularCoefficient^16
     //specular *= specular * specular * specular; // specularCoefficient^64
-
+	vec4 surfaceColor =  texture(colorTex, vec2(1-noiseInfo-.20, 0.) * .8);
 	if(bWater.x > 0)
 	{
-		surfaceColor = vec4(0.,0.,1.,1);
-//		return vec4(specular);
-		return (0.15 + (Lambertian + specular) * lightcolor) * surfaceColor; //Phong color
+		surfaceColor = texture(waterColorTex, vec2(.3+noiseInfo*8, 0.));
+		return (vec4(specular) * 1.5) + surfaceColor * Lambertian; //Phong color
 	}
     return (0.15 + (Lambertian + specular) * lightcolor) * surfaceColor; //Phong color
     
 }
-
-
 
 void main() 
 {
