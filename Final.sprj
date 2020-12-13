@@ -70,7 +70,7 @@
 			<rendertexture name="RT_World" />
 			<items>
 				<item name="P_Terrain" type="model">
-					<filepath>..\..\PlaneTest.fbx</filepath>
+					<filepath>PlaneTest.fbx</filepath>
 					<grouponly>false</grouponly>
 					<pitch>-1.57079637</pitch>
 				</item>
