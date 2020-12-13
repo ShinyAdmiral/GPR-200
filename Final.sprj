@@ -209,12 +209,6 @@
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="TerrainGeneration" shader="vs" />
-		<entry type="file" name="TerrainGeneration" shader="ps" />
-		<entry type="file" name="PerlinNoise" shader="vs" />
-		<entry type="file" name="PerlinNoise" shader="ps" />
-		<entry type="file" name="WaterPerlin" shader="vs" />
-		<entry type="file" name="WaterPerlin" shader="ps" />
 		<entry type="file" name="WaterColor" shader="vs" />
 		<entry type="file" name="WaterColor" shader="ps" />
 		<entry type="file" name="Display" shader="vs" />
@@ -223,8 +217,8 @@
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
 			<distance>6</distance>
-			<pitch>38</pitch>
-			<yaw>86</yaw>
+			<pitch>45</pitch>
+			<yaw>188</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
