@@ -6,7 +6,7 @@ uniform mat4 matGeo;
 uniform float matMaxHeight;
 uniform sampler2D noiseTex;
 uniform sampler2D colorTex;
-uniform sampler2D waterTex;
+layout (binding = 2) uniform sampler2D waterTex;
 uniform float iTime;
 uniform bool water;
 
@@ -53,13 +53,13 @@ void main()
 	{
 		bWater = vec2(1.,1.);
 		maxHeight = 0;
-		doDisplacementFromMap(0.3, waterTex);
+		doDisplacementFromMap(1, waterTex);
 	}
 	else
 	{
 		bWater = vec2(0.,0.);
 		maxHeight = 3.5;
-		doDisplacementFromMap(1., waterTex);
+		doDisplacementFromMap(1., noiseTex);
 	}
 	
 	

@@ -13,8 +13,6 @@ in vec4 vPosition;
 uniform sampler2D noiseTex;
 uniform sampler2D colorTex;
 
-
-
 vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in vec4 position,
                    in vec3 normal, in vec3 rayOrigin)
 {
@@ -43,7 +41,7 @@ vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in 
 
 	if(bWater.x > 0)
 	{
-		surfaceColor = vec4(0.,0.,1.,0);
+		surfaceColor = vec4(0.,0.,1.,1);
 		return (0.15 + (Lambertian + specular) * lightcolor) * surfaceColor; //Phong color
 	}
     return 0.05 + Lambertian  * lightcolor* surfaceColor; //Phong color

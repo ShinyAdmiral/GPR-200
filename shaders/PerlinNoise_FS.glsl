@@ -73,4 +73,9 @@ void main(){
 	fractalNoise += noise(ratio, scalePos, ratio, scalePos, matrixOctave, keyInputs.zw);
 	
 	rtFragColor = vec4(vec3(fractalNoise), 1.0);
+	
+	//edge detection
+	if (uv.x > 0.999 || uv.y > 0.999 || uv.x < 0.001 || uv.y < 0.001){
+		rtFragColor = vec4(0.0);
+	}
 }

@@ -1,6 +1,7 @@
 #version 450
 #define PI 3.14159265358979
 #define SAMP_NUM 15
+#define LINE_COUNT 30
 
 //credit: https://www.shadertoy.com/view/ltyGRV
 
@@ -11,11 +12,11 @@ uniform vec2 uResolution;
 uniform sampler2D uRT_world;
 uniform float uTime;
 
-vec3 rand(in vec2 coord, in float seed, out float Oseed){
+vec3 rand(in vec2 coord, in float seed, out float Oseed, float multiplyer){
 	
 	//base random seed
-	vec2 vec2Seed = vec2(42.0  + uTime, 
-						 130.0 + uTime);
+	vec2 vec2Seed = vec2(-4534.0  + multiplyer, 
+						 -3387.0 + multiplyer);
 	
 	//add to seed and get random red value
 	vec2Seed += seed;
@@ -24,12 +25,12 @@ vec3 rand(in vec2 coord, in float seed, out float Oseed){
 	
 	//add to seed and get random Green value
 	vec2Seed += seed;
-	float random2 = fract(sin(dot(coord, vec2Seed)) * 200);
+	float random2 = fract(sin(dot(coord, vec2Seed)) * 100);
 	seed += 0.2465;
 	
 	//add to seed and get random Blue value
 	vec2Seed += seed;
-	float random3 = fract(sin(dot(coord, vec2Seed)) * 200);
+	float random3 = fract(sin(dot(coord, vec2Seed)) * 300);
 	seed += 0.230;
 	
 	//output new seed
@@ -65,7 +66,6 @@ vec2 grad(vec2 pos, vec2 delta, vec2 res){
 	//blend colors together
 	return vec2(dot((rigColor - lefColor).xyz, soften),
 				dot((topColor - botColor).xyz, soften));
-				;
 }
 
 void main(){
@@ -81,7 +81,7 @@ void main(){
 	pos[1] = gl_FragCoord.xy;
 	
 	//VHS shift
-	float shift = 30;
+	float shift = 50;
 	float rate = 60.0;
 	float split = mod (uTime * rate, uResolution.y * 2);
 	
@@ -112,14 +112,14 @@ void main(){
 	//sample for a number of times
 	for (int i = 0; i < SAMP_NUM; i++){
 		//gradient for wash
-		vec2 gradient1 = grad(pos[0], vec2(2.0, 0.0), invRes) + 0.0001 * (rand(pos[0], seed, seed).xy-0.4);
-		vec2 gradient2 = grad(pos[1], vec2(2.0, 0.0), invRes) + 0.0001 * (rand(pos[1], seed, seed).xy-0.4);
+		vec2 gradient1 = grad(pos[0], vec2(2.0, 0.0), invRes) + 0.0001 * (rand(pos[0], seed, seed, uTime).xy-0.4);
+		vec2 gradient2 = grad(pos[1], vec2(2.0, 0.0), invRes) + 0.0001 * (rand(pos[1], seed, seed, uTime).xy-0.4);
 		
 		//loose color over distance	
 		float soften = 0.7;
 		
-		pos[0] += 0.25  * normalize(gradient1) + 0.5 * (rand(pos[0], seed, seed).xy - 0.5);
-		pos[1] += 0.5   * normalize(gradient2) + 0.5 * (rand(pos[0], seed, seed).xy - 0.5);
+		pos[0] += 0.25  * normalize(gradient1) + 0.5 * (rand(pos[0], seed, seed, uTime).xy - 0.5);
+		pos[1] += 0.5   * normalize(gradient2) + 0.5 * (rand(pos[0], seed, seed, uTime).xy - 0.5);
 		
 		//get loop - sample ratio
 		float fact = 1.0 - float(i)/float(SAMP_NUM);
@@ -127,8 +127,8 @@ void main(){
 		float f2 = 4.0 * (0.7 - fact);
 		
 		//get color
-		color1 += f1 * (getColor(pos[0], invRes).xyz + 0.15 + 0.4 * rand(pos[0], seed, seed) * soften);
-		color1 += f2 * (getColor(pos[1], invRes).xyz + 0.15 + 0.4 * rand(pos[1], seed, seed) * soften);
+		color1 += f1 * (getColor(pos[0], invRes).xyz + 0.15 + 0.4 * rand(pos[0], seed, seed, uTime) * soften);
+		color1 += f2 * (getColor(pos[1], invRes).xyz + 0.15 + 0.4 * rand(pos[1], seed, seed, uTime) * soften);
 		
 		//add invers ratio for later control
 		control += f1 + f2;
@@ -137,7 +137,17 @@ void main(){
 	//divide by control to prevent white out
 	color1 /= control*1.65;
 	
+	
+	//scan lines
+	vec2 uv = invRes * gl_FragCoord.xy;
+	float scanLines = clamp(0.35 + 0.35 * cos(uv.y * uResolution.y * 1.5), 0.0, 1.0);//credit: https://www.shadertoy.com/view/Ms23zG
+	
+	//saturate lines and add it to the image
+	scanLines *= scanLines;
+	color1 *= vec3(0.6 + 1.5 * scanLines);
+	
+	
 	//rtFragColor = texture(uRT_world, gl_FragCoord.xy/uResolution);
 	
-	rtFragColor = vec4(color1, 1.0) + rand(pos[0], seed, seed).x * 0.1;
+	rtFragColor = vec4(color1, 1.0) + rand(pos[0], seed, seed, uTime).x * 0.15;
 }
