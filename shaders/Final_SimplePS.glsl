@@ -1,4 +1,5 @@
 #version 450
+//Code by: Andrew Hunt and Rhys Sullivan
 
 out vec4 outColor;
 in float bWater;

@@ -1,6 +1,7 @@
 #version 450
+//Code by: Andrew Hunt and Rhys Sullivan
 
-
+//attributes
 layout (local_size_x = 1, 
 		local_size_y = 1,
 		local_size_z = 1) in;
@@ -9,9 +10,11 @@ layout (binding = 0) buffer bInput{
 	vec4 keyInputs;
 };
 
+//uniforms
 layout (binding = 0) uniform sampler2D uKeyboard;
 uniform float uDelta;
 
+//declarations of inputs
 const int KEY_FORWARD 		= 87;	//W key
 const int KEY_BACKWARD 		= 83;	//S key
 
@@ -27,6 +30,7 @@ const int KEY_LEFT_ARROW	= 76;	//L key
 const int SPACE 			= 32;	//Space
 
 void main(){
+	//speeds for movement and seed change
 	float speed = 5.0;
 	float seedSpeed = 0.0001;
 

@@ -1,15 +1,11 @@
 #version 450
 
-layout (location = 0) in vec4 aPosition;
-//layout (location = 2) in vec2 aTexcoord;
+//Code by: Andrew Hunt and Rhys Sullivan
 
-//varraying
-out vec2 vTexcoord;
+//attribute
+layout (location = 0) in vec4 aPosition;
 
 void main(){
 	//pass position
     gl_Position = aPosition;
-    
-    //get proper ndc
-    vTexcoord = aPosition.xy * 0.5f + 0.5f;
 }

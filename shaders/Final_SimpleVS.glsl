@@ -1,4 +1,5 @@
 #version 450
+//Code by: Andrew Hunt and Rhys Sullivan
 
 uniform mat4 matView;
 uniform mat4 matProj;
