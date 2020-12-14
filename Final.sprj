@@ -78,7 +78,7 @@
 					<filepath>WaterNew.fbx</filepath>
 					<grouponly>false</grouponly>
 					<pitch>-1.57079637</pitch>
-					<y>0.320580363</y>
+					<y>0.30056417</y>
 				</item>
 			</items>
 			<itemvalues>
@@ -102,22 +102,7 @@
 				</variable>
 				<variable type="float4x4" name="matView" system="View" />
 				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
-				<variable type="int" name="noiseTex">
-					<row>
-						<value>0</value>
-					</row>
-				</variable>
-				<variable type="int" name="colorTex">
-					<row>
-						<value>1</value>
-					</row>
-				</variable>
 				<variable type="float4x4" name="matProj" system="Projection" />
-				<variable type="int" name="waterTex">
-					<row>
-						<value>2</value>
-					</row>
-				</variable>
 			</variables>
 			<macros />
 		</pass>
@@ -196,37 +181,33 @@
 			<bind slot="0" name="WaterColor" />
 		</object>
 		<object type="texture" path="TextureLookupTable.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="ClampToEdge" wrap_t="ClampToEdge" />
-		<object type="texture" path="texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="ClampToEdge" wrap_t="ClampToEdge">
-			<bind slot="1" name="TerrainGeneration" />
-		</object>
 		<object type="rendertexture" name="RT_WaterPerlin" fsize="12000,12000" clear="true">
 			<bind slot="2" name="TerrainGeneration" />
 		</object>
 		<object type="rendertexture" name="RT_Film" fsize="686,897" clear="true">
 			<bind slot="0" name="Display" />
 		</object>
-		<object type="texture" path="water_texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
-			<bind slot="3" name="TerrainGeneration" />
-		</object>
+		<object type="texture" path="water_texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat" />
 		<object type="texture" path="tvtext.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="1" name="Display" />
 		</object>
 		<object type="texture" path="abstract-white-wood-texture-background-natural-old-pattern-grayscale-surface-105837062.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="2" name="Display" />
 		</object>
+		<object type="texture" path="texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="1" name="TerrainGeneration" />
+		</object>
 	</objects>
 	<cameras />
 	<settings>
-		<entry type="file" name="Display" shader="vs" />
-		<entry type="file" name="Display" shader="ps" />
-		<entry type="file" name="WaterColor" shader="vs" />
-		<entry type="file" name="WaterColor" shader="ps" />
+		<entry type="file" name="TerrainGeneration" shader="ps" />
+		<entry type="file" name="TerrainGeneration" shader="vs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>6</distance>
-			<pitch>38</pitch>
-			<yaw>171</yaw>
+			<distance>5</distance>
+			<pitch>24</pitch>
+			<yaw>356</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

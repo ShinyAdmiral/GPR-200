@@ -1,19 +1,18 @@
 #version 450
 
 out vec4 outColor;
-in vec2 bWater;
+in float bWater;
 in float noiseInfo;
-//PER-FRAGMENT: recieving stuff used for final color
 in vec4 vNormal;
 in vec4 vLightPos1;
 in vec4 vLightPos2;
 in vec3 VRayPos;
 in vec4 vPosition;
-
+in float offset;
+in float specularIntensity;
 uniform sampler2D noiseTex;
 uniform sampler2D colorTex;
 layout (binding = 2) uniform sampler2D waterTex;
-layout (binding = 3) uniform sampler2D waterColorTex;
 vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in vec4 position,
                    in vec3 normal, in vec3 rayOrigin)
 {
@@ -36,15 +35,9 @@ vec4 calcLighting (in vec4 lightpos, in vec4 lightcolor, float lightintense, in 
     float specular = max(0.0, dot(viewVector, reflectedLightVector));
     specular *= specular; // specularCoefficient^2
     specular *= specular; // specularCoefficient^4
-	//specular *= specular * specular * specular; // specularCoefficient^16
-    //specular *= specular * specular * specular; // specularCoefficient^64
-	vec4 surfaceColor =  texture(colorTex, vec2(1-noiseInfo-.20, 0.) * .8);
-	if(bWater.x > 0)
-	{
-		surfaceColor = texture(waterColorTex, vec2(.3+noiseInfo*8, 0.));
-		return (vec4(specular) * 1.5) + surfaceColor * Lambertian; //Phong color
-	}
-    return (0.15 + (Lambertian + specular) * lightcolor) * surfaceColor; //Phong color
+
+	vec4 surfaceColor =  texture(colorTex, vec2(1-noiseInfo-offset, 0.) * .8); // look up from texture
+    return (vec4(specular) * specularIntensity) + surfaceColor * Lambertian;
     
 }
 
