@@ -58,7 +58,7 @@ float newPos (vec2 pos , vec2 res , float time){
 	float wave = 0.5;
 	float height = 15;
 	
-	float shiftRatio = shift * split/uResolution.y;
+	float shiftRatio = shift * split/(uResolution.y * 2.0);
 
 	//shift everything if under split
 	if (pos.y > split && pos.y < glitch ){
