@@ -1,19 +1,16 @@
 #version 450
-#define PI 3.14159265358979
-#define SAMP_NUM 15
-#define LINE_COUNT 20
+//Code by: Andrew Hunt and Rhys Sullivan
 
-//credit: https://www.shadertoy.com/view/ltyGRV
-
+//attributes
 layout (location = 0) out vec4 rtFragColor;
 layout (location = 1) in vec4 gl_FragCoord;
 
+//uniforms
 uniform vec2 uResolution;
 uniform sampler2D uRT_world;
 uniform float uTime;
 
 vec3 rand(in vec2 coord, in float seed, out float Oseed, float multiplyer){
-	
 	//base random seed
 	vec2 vec2Seed = vec2(-4534.0  + multiplyer, 
 						 -3387.0 + multiplyer);
@@ -21,7 +18,7 @@ vec3 rand(in vec2 coord, in float seed, out float Oseed, float multiplyer){
 	//add to seed and get random red value
 	vec2Seed += seed;
 	float random1 = fract(sin(dot(coord, vec2Seed)) * 300);
-	seed += 0.42;
+	seed += 0.4232;
 	
 	//add to seed and get random Green value
 	vec2Seed += seed;
@@ -30,7 +27,7 @@ vec3 rand(in vec2 coord, in float seed, out float Oseed, float multiplyer){
 	
 	//add to seed and get random Blue value
 	vec2Seed += seed;
-	float random3 = fract(sin(dot(coord, vec2Seed)) * 300);
+	float random3 = fract(sin(dot(coord, vec2Seed)) * 30);
 	seed += 0.230;
 	
 	//output new seed
@@ -41,6 +38,8 @@ vec3 rand(in vec2 coord, in float seed, out float Oseed, float multiplyer){
 }
 
 vec4 getColor(vec2 pos, vec2 res){
+	
+
 	//get uvs
 	vec2 uv = pos * res;
 	
@@ -50,22 +49,27 @@ vec4 getColor(vec2 pos, vec2 res){
 	return color;
 }
 
-vec2 grad(vec2 pos, vec2 delta, vec2 res){
+float newPos (vec2 pos , vec2 res , float time){
+	float shift = 50;
+	float rate = 60.0;
+	float split = mod (time * rate, res.y * 2);
+	float glitch = split + 30;
 	
-	//soften coefficient 
-	vec3 soften = vec3(0);
+	float wave = 0.5;
+	float height = 15;
 	
-	//get gradient by sampling colors around the fragment
-	//get gradient form top and bottom
-	vec4 rigColor = getColor(pos + delta.xy, res);
-	vec4 lefColor = getColor(pos - delta.xy, res);
+	float shiftRatio = shift * split/uResolution.y;
+
+	//shift everything if under split
+	if (pos.y > split && pos.y < glitch ){
+		pos.x += sin(gl_FragCoord.y * wave) * height;
+	}
+	else if (pos.y < split){
+		pos.x += shift;
+	}
 	
-	vec4 topColor = getColor(pos + delta.yx, res);
-	vec4 botColor = getColor(pos - delta.yx, res);
-	
-	//blend colors together
-	return vec2(dot((rigColor - lefColor).xyz, soften),
-				dot((topColor - botColor).xyz, soften));
+	//else slowly move it back
+	return pos.x + shift - shiftRatio;
 }
 
 void main(){
@@ -76,77 +80,39 @@ void main(){
 	vec2 invRes = 1.0 / uResolution;
 	
 	//declare and initilize each position
-	vec2[2] pos;
-	pos[0] = gl_FragCoord.xy;
-	pos[1] = gl_FragCoord.xy;
+	vec2 pos = gl_FragCoord.xy;
 	
 	//VHS shift
 	float shift = 50;
 	float rate = 60.0;
 	float split = mod (uTime * rate, uResolution.y * 2);
-	float glitch = split + 20;
+	float glitch = split + 30;
 	
 	float wave = 0.5;
 	float height = 15;
 	
-	//shift everything if under split
-	if (pos[0].y > split && pos[0].y < glitch){
-		pos[0].x += sin(gl_FragCoord.y * wave) * height;
-		pos[1].x += sin(gl_FragCoord.y * wave) * height;
-	}
-	else if (pos[0].y < split){
-		pos[0].x += shift;
-		pos[1].x += shift;
-	}
-	else{
-	//else slowly move it back
-		float shiftRatio = shift * split/uResolution.y;
+	float shiftRatio = shift * split/uResolution.y;
 	
-		pos[0].x += shift - shiftRatio;
-		pos[1].x += shift - shiftRatio;
-	}
+	pos.x = newPos(pos, uResolution, uTime);
 	
+	//bend edges for a more retro look
 	wave = 0.5;
-	height = 2.0;
+	height = 2.5;
 	
-	pos[0].x += sin(gl_FragCoord.y * wave) * height;
-	pos[1].x += sin(gl_FragCoord.y * wave) * height;
+	pos.x += sin(gl_FragCoord.y * wave) * height;
 	
-	//start each color to gradient
-	vec3 color1 = vec3(0);
-	vec3 color2 = vec3(0);
+	//gradient for washing grain
+	float soften = 0.8;
 	
-	float control = 0.0;
-	
-	//sample for a number of times
-	for (int i = 0; i < SAMP_NUM; i++){
-		//gradient for wash
-		vec2 gradient1 = grad(pos[0], vec2(2.0, 0.0), invRes) + 0.0001 * (rand(pos[0], seed, seed, uTime).xy-0.4);
-		vec2 gradient2 = grad(pos[1], vec2(2.0, 0.0), invRes) + 0.0001 * (rand(pos[1], seed, seed, uTime).xy-0.4);
+	//sample ratio
+	float sampleRatio = 6.0;
 		
-		//loose color over distance	
-		float soften = 0.7;
-		
-		pos[0] += 0.25  * normalize(gradient1) + 0.5 * (rand(pos[0], seed, seed, uTime).xy - 0.5);
-		pos[1] += 0.5   * normalize(gradient2) + 0.5 * (rand(pos[0], seed, seed, uTime).xy - 0.5);
-		
-		//get loop - sample ratio
-		float fact = 1.0 - float(i)/float(SAMP_NUM);
-		float f1 = 3.0 * fact;
-		float f2 = 4.0 * (0.7 - fact);
-		
-		//get color
-		color1 += f1 * (getColor(pos[0], invRes).xyz + 0.15 + 0.4 * rand(pos[0], seed, seed, uTime) * soften);
-		color1 += f2 * (getColor(pos[1], invRes).xyz + 0.15 + 0.4 * rand(pos[1], seed, seed, uTime) * soften);
-		
-		//add invers ratio for later control
-		control += f1 + f2;
-	}
+	//get color with ratio wights
+	vec3 color1 = sampleRatio * (getColor(pos, invRes).xyz + 0.15 + 0.4 * rand(pos, seed, seed, uTime).zxy * soften);
 	
 	//divide by control to prevent white out
-	color1 /= control*1.65;
+	color1 /= sampleRatio * 1.65;
 	
-
-	
-	rtFragColor = vec4(color1, 1.0) + rand(pos[0], seed, seed, uTime).x * 0.15;
+	//return color with extra noise
+	rtFragColor = vec4(color1, 1.0) + rand(pos, seed, seed, uTime).x * 0.15;
 }

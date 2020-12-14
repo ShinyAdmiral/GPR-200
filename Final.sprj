@@ -77,6 +77,9 @@
 				<item name="P_Water" type="model">
 					<filepath>WaterNew.fbx</filepath>
 					<grouponly>false</grouponly>
+					<scaleX>0.949999988</scaleX>
+					<scaleY>0.949999988</scaleY>
+					<scaleZ>0.949999988</scaleZ>
 					<pitch>-1.57079637</pitch>
 					<y>0.320580363</y>
 				</item>
@@ -199,7 +202,7 @@
 		<object type="texture" path="texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="ClampToEdge" wrap_t="ClampToEdge">
 			<bind slot="1" name="TerrainGeneration" />
 		</object>
-		<object type="rendertexture" name="RT_WaterPerlin" fsize="12000,12000" clear="true">
+		<object type="rendertexture" name="RT_WaterPerlin" fsize="1000,1000" clear="true">
 			<bind slot="2" name="TerrainGeneration" />
 		</object>
 		<object type="rendertexture" name="RT_Film" fsize="686,897" clear="true">
@@ -214,6 +217,10 @@
 		<object type="texture" path="abstract-white-wood-texture-background-natural-old-pattern-grayscale-surface-105837062.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
 			<bind slot="2" name="Display" />
 		</object>
+		<object type="texture" path="edge_texture.png" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="0" name="PerlinNoise" />
+			<bind slot="0" name="WaterPerlin" />
+		</object>
 	</objects>
 	<cameras />
 	<settings>
@@ -221,12 +228,19 @@
 		<entry type="file" name="Display" shader="ps" />
 		<entry type="file" name="WaterColor" shader="vs" />
 		<entry type="file" name="WaterColor" shader="ps" />
+		<entry type="file" name="PerlinNoise" shader="vs" />
+		<entry type="file" name="PerlinNoise" shader="ps" />
+		<entry type="file" name="TerrainGeneration" shader="vs" />
+		<entry type="file" name="TerrainGeneration" shader="ps" />
+		<entry type="file" name="WaterPerlin" shader="vs" />
+		<entry type="file" name="WaterPerlin" shader="ps" />
+		<entry type="file" name="CInput" shader="cs" />
 		<entry type="pinned" name="water" owner="TerrainGeneration" />
 		<entry type="pinned" name="matMaxHeight" owner="TerrainGeneration" />
 		<entry type="camera" fp="false">
-			<distance>6</distance>
-			<pitch>38</pitch>
-			<yaw>171</yaw>
+			<distance>7</distance>
+			<pitch>60</pitch>
+			<yaw>351</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
